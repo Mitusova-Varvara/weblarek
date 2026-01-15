@@ -1,7 +1,11 @@
 export type ApiPostMethods = "POST" | "PUT" | "DELETE";
 export type TPayment = "online" | "cash" | null;
+export type TBuyerErrors = Partial<Record<keyof IBuyer, string>>;
 
-export interface IApiGet extends IProduct {}
+export interface IApiGet {
+  total: number;
+  items: IProduct[];
+}
 
 export interface IApiPost extends IBuyer {
   total: number;
@@ -31,11 +35,4 @@ export interface IBuyer {
   email: string;
   phone: string;
   address: string;
-}
-
-export interface ValidationErrors {
-  payment?: string;
-  address?: string;
-  email?: string;
-  phone?: string;
 }

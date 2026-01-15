@@ -8,9 +8,8 @@ export class ApiCommunication {
     this.api = api;
   }
 
-  async getFetch(): Promise<IApiGet[]> {
-    let result = await this.api.get<{ items: IApiGet[] }>("/product");
-    return result.items;
+  getFetch(): Promise<IApiGet> {
+    return this.api.get<IApiGet>("/product");
   }
 
   async postOrder(data: IApiPost) {

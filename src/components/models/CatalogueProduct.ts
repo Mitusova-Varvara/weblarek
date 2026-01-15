@@ -16,12 +16,7 @@ export class CatalogueProduct {
 
   //получение одного товара по его id;
   getItemId(id: string): IProduct | undefined {
-    for (const item of this.items) {
-      if (item.id === id) {
-        return item;
-      }
-    }
-    return undefined;
+    return this.items.find((item) => item.id === id);
   }
 
   //сохранение товара для подробного отображения;

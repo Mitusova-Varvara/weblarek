@@ -8,12 +8,12 @@ import { apiProducts } from "./utils/data";
 import { API_URL } from "./utils/constants";
 
 // проверка работоспособности класса CatalogueProduct
-let product = new CatalogueProduct();
+const product = new CatalogueProduct();
 product.setItems(apiProducts.items); //сохраняем массив товаров
-let allProduct = product.getItems();
+const allProduct = product.getItems();
 console.log("Массив товаров из католога:", allProduct); // массив товаров из католога
-let firstProductId = apiProducts.items[0].id;
-let selectedProduct = product.getItemId(firstProductId); //получение одного товара по его id
+const firstProductId = apiProducts.items[0].id;
+const selectedProduct = product.getItemId(firstProductId); //получение одного товара по его id
 
 if (selectedProduct) {
   product.setItemId(selectedProduct);
@@ -21,11 +21,11 @@ if (selectedProduct) {
 }
 
 // проверка работоспособности класса Basket
-let basket = new Basket();
-let newProduct = apiProducts.items[0];
+const basket = new Basket();
+const newProduct = apiProducts.items[0];
 basket.addItem(newProduct); // добавляем в корзину товары
 basket.addItem(apiProducts.items[1]); // добавляем в корзину товары
-let allSelectedProduct = basket.getSelectedItems();
+const allSelectedProduct = basket.getSelectedItems();
 console.log("Товары в корзине:", allSelectedProduct);
 console.log(
   "Проверка наличия товара в корзине:",
@@ -42,7 +42,7 @@ basket.clearBasket(); // очистка корзины
 console.log("Количество товаров в корзине после очистки:", basket.getCount());
 
 // проверка работоспособности класса Buyer
-let buyer = new Buyer();
+const buyer = new Buyer();
 buyer.setInfoBuyer({
   payment: "online",
   address: "",
@@ -58,10 +58,11 @@ buyer.clean(); // удаление данных о покупателе
 console.log("Данные о покупателе после удаления:", buyer.getInfoBuyer());
 
 //Запрос к серверу за массивом товаров в каталоге
-let apiCom = new ApiCommunication(new Api(API_URL));
+const apiCom = new ApiCommunication(new Api(API_URL));
 apiCom
   .getFetch()
-  .then((items) =>
-    console.log("Сохраняем ответ с сервера:", product.getItems())
-  )
+  .then((response) => {
+    product.setItems(response.items);
+    console.log("Сохраненный массив с сервера:", product.getItems());
+  }) //Сохраняем ответ с сервера
   .catch((error) => console.log(error));

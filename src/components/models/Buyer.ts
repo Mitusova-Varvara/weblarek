@@ -1,5 +1,5 @@
-import { TPayment } from "../../types";
-import { ValidationErrors } from "../../types";
+import { IBuyer, TPayment } from "../../types";
+import { TBuyerErrors } from "../../types";
 
 export class Buyer {
   private payment: TPayment = null;
@@ -8,12 +8,7 @@ export class Buyer {
   private phone: string = "";
 
   //сохранение данных в модели.
-  setInfoBuyer(data: {
-    payment?: TPayment;
-    address?: string;
-    email?: string;
-    phone?: string;
-  }) {
+  setInfoBuyer(data: Partial<IBuyer>) {
     if (data.payment) {
       this.payment = data.payment;
     }
@@ -29,7 +24,7 @@ export class Buyer {
   }
 
   //получение всех данных покупателя;
-  getInfoBuyer() {
+  getInfoBuyer(): IBuyer {
     return {
       payment: this.payment,
       address: this.address,
@@ -46,8 +41,8 @@ export class Buyer {
   }
 
   //валидация данных.
-  validate(): ValidationErrors {
-    let validationErrors: ValidationErrors = {};
+  validate(): TBuyerErrors {
+    const validationErrors: TBuyerErrors = {};
 
     if (!this.payment) {
       validationErrors.payment = "Не выбран вид оплаты";
