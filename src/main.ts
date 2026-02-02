@@ -6,56 +6,31 @@ import { Api } from "./components/base/Api";
 import { ApiCommunication } from "./components/base/ApiCommunication";
 import { apiProducts } from "./utils/data";
 import { API_URL } from "./utils/constants";
+import { CardCatalog } from "./components/view/card/CardCatalog";
+import { cloneTemplate } from "./utils/utils";
+import { Modal } from "./components/view/Modal";
+import { CardPreview } from "./components/view/card/CardPreview";
+import { Gallery } from "./components/view/Gallery";
+import { CardBasket } from "./components/view/card/CardBasket";
+import { Cart } from "./components/view/Cart";
+import { OrderForm } from "./components/view/form/OrderForm";
+import { ContactForm } from "./components/view/form/ContactForm";
+import { EventEmitter } from "./components/base/Events";
+import { IProduct, TPayment } from "./types";
+import { Header } from "./components/view/Header";
+
+let events = new EventEmitter();
 
 // проверка работоспособности класса CatalogueProduct
 const product = new CatalogueProduct();
 product.setItems(apiProducts.items); //сохраняем массив товаров
 const allProduct = product.getItems();
 console.log("Массив товаров из католога:", allProduct); // массив товаров из католога
-const firstProductId = apiProducts.items[0].id;
-const selectedProduct = product.getItemId(firstProductId); //получение одного товара по его id
 
-if (selectedProduct) {
-  product.setItemId(selectedProduct);
-  console.log("Выбранный товар :", product.getItem());
-}
-
-// проверка работоспособности класса Basket
 const basket = new Basket();
-const newProduct = apiProducts.items[0];
-basket.addItem(newProduct); // добавляем в корзину товары
-basket.addItem(apiProducts.items[1]); // добавляем в корзину товары
-const allSelectedProduct = basket.getSelectedItems();
-console.log("Товары в корзине:", allSelectedProduct);
-console.log(
-  "Проверка наличия товара в корзине:",
-  basket.hasProduct(newProduct)
-);
-console.log("Количество товатов в корзине:", basket.getCount());
-console.log("Стоимость товаров в корзине:", basket.getCostProduct());
-basket.removeItem(newProduct); // удаляем товар из корзины
-console.log(
-  "Проверка наличия товара в корзине, после удаления:",
-  basket.hasProduct(newProduct)
-);
-basket.clearBasket(); // очистка корзины
-console.log("Количество товаров в корзине после очистки:", basket.getCount());
 
 // проверка работоспособности класса Buyer
 const buyer = new Buyer();
-buyer.setInfoBuyer({
-  payment: "online",
-  address: "",
-  email: "blablabla@email.com",
-  phone: "00000000000",
-}); // добавляем информацию о новом покупатале
-console.log("Данные о новом покупателе:", buyer.getInfoBuyer());
-console.log(
-  "Валидация неполных данных и вывод сообщения об ошибке",
-  buyer.validate()
-);
-buyer.clean(); // удаление данных о покупателе
-console.log("Данные о покупателе после удаления:", buyer.getInfoBuyer());
 
 //Запрос к серверу за массивом товаров в каталоге
 const apiCom = new ApiCommunication(new Api(API_URL));
@@ -64,5 +39,81 @@ apiCom
   .then((response) => {
     product.setItems(response.items);
     console.log("Сохраненный массив с сервера:", product.getItems());
+    const gallery = document.querySelector(".gallery") as HTMLElement;
+    const cards = product
+      .getItems()
+      .map((prod) =>
+        new CardCatalog(cloneTemplate("#card-catalog"), events).render(prod),
+      );
+    const classGallery = new Gallery(gallery).render({ catalog: cards });
   }) //Сохраняем ответ с сервера
   .catch((error) => console.log(error));
+
+const gallery = document.querySelector(".gallery")!;
+let container = document.querySelector(".modal") as HTMLElement;
+const modal = new Modal(container);
+
+let cardPreviewTempalte = cloneTemplate<HTMLElement>("#card-preview");
+
+let contactForm = new ContactForm(
+  cloneTemplate<HTMLElement>("#contacts"),
+  events,
+).render();
+
+//modal.render();
+//modal.open(contactForm);
+
+//let success = new Success(cloneTemplate<HTMLElement>("#success")).render();
+//modal.render();
+//modal.open(success);
+
+const headerContainer = document.querySelector(".header") as HTMLElement;
+
+new Header(headerContainer, events);
+
+events.on("product:select", (item: IProduct) => {
+  product.setItemId(item);
+
+  const cardPreview = new CardPreview(
+    cloneTemplate<HTMLElement>("#card-preview"),
+    events,
+    basket,
+  ).render(item);
+
+  modal.render();
+  modal.open(cardPreview);
+});
+
+basket.clearBasket();
+
+events.on("basket:open", () => {
+  // тут рисуется пустой массив, надо придумать как исправить на null
+  let basketProducts = (basket.getSelectedItems() || []).map((item, index) =>
+    new CardBasket(cloneTemplate<HTMLElement>("#card-basket")).render({
+      ...item,
+      index,
+    }),
+  );
+  const basketel = new Cart(
+    cloneTemplate<HTMLElement>("#basket"),
+    events,
+  ).render({
+    items: basketProducts,
+    total: basket.getCostProduct(),
+  });
+  modal.render();
+  modal.open(basketel);
+});
+
+const form = new OrderForm(cloneTemplate<HTMLElement>("#order"), events, buyer);
+
+events.on("order:open", () => {
+  modal.content = form.render();
+});
+
+console.log(buyer.getInfoBuyer());
+
+events.on("order:submit", () => {
+  modal.content = contactForm;
+  modal.render();
+});

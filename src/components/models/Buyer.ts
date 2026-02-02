@@ -23,6 +23,22 @@ export class Buyer {
     }
   }
 
+  setPayment(value: TPayment): void {
+    this.payment = value;
+  }
+
+  setAddress(value: string): void {
+    this.address = value;
+  }
+
+  setEmail(value: string): void {
+    this.email = value;
+  }
+
+  setPhone(value: string): void {
+    this.phone = value;
+  }
+
   //получение всех данных покупателя;
   getInfoBuyer(): IBuyer {
     return {

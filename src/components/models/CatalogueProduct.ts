@@ -20,7 +20,7 @@ export class CatalogueProduct {
   }
 
   //сохранение товара для подробного отображения;
-  setItemId(item: IProduct | null): void {
+  setItemId(item: IProduct): void {
     this.selectedItem = item;
   }
 
