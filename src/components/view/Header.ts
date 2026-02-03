@@ -19,9 +19,6 @@ export class Header extends Component<IHeader> {
       ".header__basket-counter",
       this.container,
     );
-    this.events.on("basket:count_changed", (value: { count: number }) => {
-      this.count = value.count;
-    });
     this.buttonEl = ensureElement<HTMLButtonElement>(
       ".header__basket",
       this.container,

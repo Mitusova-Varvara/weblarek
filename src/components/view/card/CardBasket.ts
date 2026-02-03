@@ -28,7 +28,7 @@ export class CardBasket extends Card<ICardBasket> {
     );
     this.deletButtonEl.addEventListener("click", () => {
       if (this.curentItem) {
-        this.events.emit("product:delet", this.curentItem);
+        this.events.emit("product:delete", this.curentItem);
       }
     });
   }

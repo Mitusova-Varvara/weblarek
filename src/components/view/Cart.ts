@@ -35,13 +35,8 @@ export class Cart extends Component<IBasket> {
   }
 
   set items(list: HTMLElement[]) {
-    if (list.length === 0) {
-      // this.listBasketEl.textContent = "Корзина пуста";
-      this.basketButtonEl.disabled = true;
-    } else {
-      console.log("set items list:", list);
-      this.listBasketEl.replaceChildren(...list);
-    }
+    this.basketButtonEl.disabled = list.length === 0;
+    this.listBasketEl.replaceChildren(...list);
   }
 
   set total(value: number) {

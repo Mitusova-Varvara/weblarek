@@ -4,7 +4,6 @@ import { ensureElement } from "../../../utils/utils";
 import { CDN_URL } from "../../../utils/constants";
 import { categoryMap } from "../../../utils/constants";
 import { IEvents } from "../../base/Events";
-import { Basket } from "../../models/Basket";
 
 type TCardPreview = Pick<IProduct, "image" | "category" | "description">;
 
@@ -18,7 +17,6 @@ export class CardPreview extends Card<TCardPreview> {
   constructor(
     container: HTMLElement,
     protected events: IEvents,
-    protected basket: Basket,
   ) {
     super(container, events);
     this.imageEl = ensureElement<HTMLImageElement>(
@@ -68,7 +66,6 @@ export class CardPreview extends Card<TCardPreview> {
       this.buttonEl.textContent = "Недоступно";
     } else {
       this.buttonEl.removeAttribute("disabled");
-      this.renderButtonText(this.basket.hasProduct(product));
     }
     return super.render(product);
   }
