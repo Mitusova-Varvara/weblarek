@@ -155,7 +155,7 @@ Presenter - презентер содержит основную логику п
 `private phone: string = "";` - хранит номер телефона покупателя.
 
 Методы класса:
-`setInfoBuyer(data: {payment?: TPayment; address?: string; email?: string; phone?: string; }) { if (data.payment) {this.payment = data.payment;} else if (data.address) {this.address = data.address;} else if (data.email) {this.email = data.email;} else if (data.phone) {this.phone = data.phone;}}` - сохранение данных в модели. Отдельные методы для каждого поля. Реализована возможность сохранить только одно значение, не удалив при этом значения других полей, которые уже могут храниться в классе.
+`setInfoBuyer(data: Partial<IBuyer>) {Object.assign(this as object, data)}` - сохранение данных в модели.
 `getInfoBuyer() {return {payment: this.payment, address: this.address, email: this.email, phone: this.phone,};}` - получение всех данных покупателя;
 `clean(): void {this.payment = null; this.address = ""; this.email = ""; this.phone = "";}` - очистка данных покупателя;
 `validate(): ValidationErrors {let validationErrors: ValidationErrors = {};if (!this.payment) {validationErrors.payment = "Не выбран вид оплаты";} else if (!this.address) {validationErrors.address = "Укажите aдресс";} else if (!this.email) {validationErrors.email = "Укажите емэйл";} else if (!this.phone) {validationErrors.phone = "Укажите номер телефона";}return validationErrors;}` - валидация данных. Поле является валидным, если оно не пустое. Метод дает возможность определить не только валидность каждого отдельного поля, но и предоставлять информацию об ошибке, связанной с проверкой конкретного значения.
@@ -173,3 +173,240 @@ Presenter - презентер содержит основную логику п
 
 `async getFetch(): Promise<IApiGet[]> {let result = await this.api.get<{ items: IApiGet[] }>("/product");return result.items;}` - выполняет запрос на сервер с помощью метода get класса Api и получает с сервера объект с массивом товаров.
 `async postOrder(data: IApiPost) {return await this.api.post<IApiPost[]>("/order", data);}` - отправляет данные на сервер с помощью метода post класса Api.
+
+### Слой Представления
+
+#### Класс Header
+
+Поля класса:
+`protected counterEl: HTMLElement` - хранит элемент html разметки с числом продуктов в корзине.
+`protected buttonEl: HTMLButtonElement` - хранит элемент html разметки с кнопкой, открывающей корзину
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+
+Инициируется событие: `basket:open` - при нажатии на иконку корзины открывается корзина;
+
+Методы класса:
+`set count(value: number) {this.counterEl.textContent = String(value)}` - отображение счетчика с количеством продуктов в корзине.
+
+#### Класс Gallery
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+
+Методы класса:
+`set catalog(items: HTMLElement[]) {this.container.replaceChildren(...items)}` - отображение каталога товаров;
+
+#### Класс Cart
+
+Поля класса:
+`protected listBasketEl: HTMLElement` - хранит элемент html разметки со списком товаров.
+`protected basketButtonEl: HTMLButtonElement` - хранит элемент html разметки с кнопкой, отрывающей форму заказа.
+`protected totalPriceEl: HTMLElement` - хранит элемент html разметки, отображающий общую стоимость товаров в корзине.
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+
+Инициируется событие: `order:open` - при нажатии на кнопку «Оформить» открывается модальное окно с формой оформления товара.
+
+Методы класса:
+`set items(list: HTMLElement[]) {this.basketButtonEl.disabled = list.length === 0; this.listBasketEl.replaceChildren(...list)}` - отображается список товаров, которые выбрал покупатель и если в корзине нет товаров, кнопка оформления должна быть деактивирована.
+
+`set total(value: number) {this.totalPriceEl.textContent = `${value} синапсов`}` - отображается общая стоимость товаров в корзине;
+
+#### Класс Modal
+
+Поля класса:
+`protected contentEl: HTMLElement` - элемент html разметки с контейнером, где рендерится информация из дочерних классов: OrderForm и ContactForm.
+`protected buttonEl: HTMLButtonElement` - элемент html разметки с кнопкой, закрывающей модальное окно.
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+
+Методы класса:
+`set content(value: HTMLElement) {this.contentEl.replaceChildren(value)}` - отображается информация из дочерних классов: OrderForm и ContactForm.
+`open(value: HTMLElement) {this.container.classList.add("modal_active");this.contentEl.replaceChildren(value);}` - открытие модального окна с информацией от дочерних классов.
+`close() {this.container.classList.remove("modal_active")}` - закрытие модального окна.
+
+#### Класс Success
+
+Поля класса:
+`protected totalCostEl: HTMLElement` - хранит элемент html разметки, отображающий общую стоимость товаров в заказе.
+`protected closeButton: HTMLButtonElement` - хранит элемент html разметки с кнопкой, закрывающей окно успешного оформления заказа.
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+
+Инициируется событие: `succes:close` - при нажатии на кнопку оплаты выполняется передача данных о заказе на сервер, появляется сообщение об успешной оплате, товары удаляются из корзины, данные покупателя очищаются.
+
+Методы класса:
+`set total(value: number) {this.totalCostEl.textContent = `Списано ${value} синапсов`}` - отображается общая стоимость товаров в заказе.
+
+#### Класс Form
+
+Поля класса:
+`protected errorsEl: HTMLElement` - хранит элемент html разметки, отображающий ошибки при валидации.
+`protected buttonEl: HTMLButtonElement` - хранит элемент html разметки с кнопкой «Далее», может быть активной, если: на форме нет ошибок, выбран способ оплаты и поле адреса доставки непустое;
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+
+Методы класса:
+`set error(message: string) {this.errorsEl.textContent = message}` - если одно из полей не заполнено, появляется сообщение об ошибке;
+`clearErrors(): void {this.errorsEl.textContent = ""}` - очищение элемента разметки с сообщениями об ошибках.
+`toggleErrorClass(value: boolean): void {this.errorsEl.classList.toggle("form__errors-active", value)}` - отображение сообщений об ошибках.
+`setSubmitEnabled(enabled: boolean): void {this.buttonEl.disabled = !enabled}`- изменение активности кнопки «Далее».
+`resetForm(): void {this.clearErrors();this.buttonEl.setAttribute("disabled", "true")}` - приведение формы в изначальное состояние.
+`abstract checkValidation(message: TBuyerErrors): boolean;` - валидация данных формы.
+
+#### Класс OrderForm
+
+Поля класса:
+`protected cashButtonEl: HTMLButtonElement` - элемент html разметки с выбором оплаты "При получении".
+`protected cardButtonEl: HTMLButtonElement` - элемент html разметки с выбором оплаты "Онлайн".
+`protected inputEl: HTMLInputElement` - элемент html разметки с полем ввода "Адресс".
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+`protected data: Partial<IBuyer> = {}` - объект с данными типа IBuyer.
+
+Инициируется события:
+`order:submit` - открывается модальное окно с рендером класса ContactForm
+`buyer:change` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
+
+Методы класса:
+`clear(): void ` - очистка формы
+`onChange() {this.events.emit("buyer:change", this.data)}` - метод, который помогает реагировать на любые изменения в данных, вводимых пользователем.
+`setValidationErrors(value: TBuyerErrors)` - отображение ошибок при валидации формы и блокировка кнопки «Далее».
+`togglePaymentButton(payment: TPayment): void `- при выборе оплаты используется модификатор 'button_alt-active' для выделения кнопки с выбранным видом оплаты.
+`checkValidation(message: TBuyerErrors): boolean` - валидация формы.
+
+#### Класс ContactForm
+
+Поля класса:
+`protected EmailInputEl: HTMLInputElement` - элемент html разметки с полем ввода "почта".
+`protected PhoneInputEl: HTMLInputElement` - элемент html разметки с полем ввода "телефон".
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+`protected data: Partial<IBuyer> = {}` - объект с данными типа IBuyer.
+
+Инициируется события:
+`order:succes` - открывается модальное окно с модальным окном успешного выполнения заказа.
+`buyer:change` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
+
+Методы класса:
+`clear(): void ` - очистка формы
+`onChange() {this.events.emit("buyer:change", this.data)}` - метод, который помогает реагировать на любые изменения в данных, вводимых пользователем.
+`setValidationErrors(value: TBuyerErrors)` - отображение ошибок при валидации формы и блокировка кнопки «Далее».
+`checkValidation(message: TBuyerErrors): boolean` - валидация формы.
+
+#### Класс Card
+
+Поля класса:
+`protected titleEl: HTMLElement` - элемент html разметки с названием товара.
+`protected priceEl: HTMLElement` - элемент html разметки с ценой товара.
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected evt: IEvents` - брокер событий
+
+Методы класса:
+`set title(value: string) {this.titleEl.textContent = value}` - отображение названия товара в карточке.
+`set price(value: number | null) {this.priceEl.textContent = value ? `${value} синапсов` : "Бесценно"}` - отображение цены товара в карточке, если она есть, если нет - "Бесценно".
+
+#### Класс CardBasket
+
+Поля класса:
+`protected indexEl: HTMLElement;` - элемент html разметки с индексом товара в корзине.
+`protected deletButtonEl: HTMLButtonElement;` - элемент html разметки с кнопкой, удаляющей товар из корзины.
+`private curentItem: IProduct | null = null;` - отображает карточку товара, которую выбрал пользователь.
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+
+Инициируется события:
+`product:delete` - товар удаляется из корзины.
+
+Методы класса:
+`set index(value: number) {this.indexEl.textContent = String((value || 0) + 1);}` - отображение индекса товара в корзине.
+`render(product: ICardBasket): HTMLElement` - рендер корзины.
+
+#### Класс CardCatalog
+
+Поля класса:
+`protected imageEl: HTMLImageElement` - элемент html разметки с изображением товара в каталоге.
+`protected categoryEl: HTMLElement` - элемент html разметки с категорией товара в каталоге.
+`private curentItem: IProduct | null = null;` - отображает карточку товара, которую выбрал пользователь.
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+
+Инициируется события:
+`product:select` - отображается подробная информация о товаре.
+
+Методы класса:
+`set image(value: string) ` - рендер картинки
+`set category(value: string) ` - рендер категории
+`render(product: IProduct): HTMLElement` - рендер карточки товара в каталоге.
+
+#### Класс CardPreview
+
+`protected imageEl: HTMLImageElement` - элемент html разметки с изображением товара в каталоге.
+`protected categoryEl: HTMLElement` - элемент html разметки с категорией товара в каталоге.
+`private curentItem: IProduct | null = null;` - отображает карточку товара, которую выбрал пользователь.
+`protected descriptionEl: HTMLElement` - элемент html разметки с описанием товара в каталоге.
+`protected buttonEl: HTMLButtonElement`- элемент html разметки с описанием кнопкой, добавляющей товар в корзину.
+
+Конструктор класса принимает параметры:
+`container: HTMLElement` - элемент html разметки с контейнером
+`protected events: IEvents` - брокер событий
+
+Инициируется события:
+`cart:add_product` - отображает добавление товара в корзину.
+
+Методы класса:
+`set image(value: string) ` - рендер картинки.
+`set category(value: string) ` - рендер категории.
+`set description(value: string)` - рендер описания.
+`renderButtonText(value: boolean): void ` - рендер текста в кнопке, в зависимости от ее состояния.
+`render(product: IProduct): HTMLElement` - рендер карточки товара в каталоге.
+
+### Презентер
+
+#### Класс Presenter
+
+Поля класса:
+Экземпляры всех классов слоя Представления, слоя Модели данных, брокер событий и слой коммуникации.
+
+Инициируется события:
+`cart:add_product` - отображает добавление товара в корзину.
+`products:loaded` - отображается галерея с товарами.
+`basket:open` - открывается корзина с товарами.
+`product:select` - отображается подробная информация о товаре.
+`product:delete` - товар удаляется из корзины.
+`order:open` - открывается модальное окно с рендером класса OrderForm.
+`order:succes` - открывается модальное окно с модальным окном успешного выполнения заказа.
+`order:submit` - открывается модальное окно с рендером класса ContactForm
+`succes:close` - закрывается модальное окно с успешным выполнением заказа.
+`buyer:change` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
+
+Методы класса:
+`cartAddProduct(item: IProduct): void` - добавление товара в корзину.
+`renderGallery()` - рендер галереи с товарами.
+`renderBasket()` - рендер корзины с товарами.
+`succesOpen()` - открывается модальное окно с модальным окном успешного выполнения заказа.
+`succesClose()` - закрывается модальное окно с успешным выполнением заказа.
+`productDeleteFromCart(item: IProduct): void` - товар удаляется из корзины.
+`openPreview(item: IProduct): void` - отображается подробная информация о товаре.
+`changeInfoBuyer(data: Partial<IBuyer>)` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
+`renderOrderForm()` - открывается модальное окно с рендером класса OrderForm.
+`renderContactForm()` - открывается модальное окно с рендером класса ContactForm.

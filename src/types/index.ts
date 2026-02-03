@@ -9,7 +9,7 @@ export interface IApiGet {
 
 export interface IApiPost extends IBuyer {
   total: number;
-  items: string[];
+  items: IProduct[];
 }
 
 export interface IApi {
@@ -17,7 +17,7 @@ export interface IApi {
   post<T extends object>(
     uri: string,
     data: object,
-    method?: ApiPostMethods
+    method?: ApiPostMethods,
   ): Promise<T>;
 }
 

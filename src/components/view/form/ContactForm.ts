@@ -1,7 +1,7 @@
 import { ensureElement } from "../../../utils/utils";
 import { Form } from "./Form";
 import { IEvents } from "../../base/Events";
-import { TBuyerErrors } from "../../../types";
+import { IBuyer, TBuyerErrors } from "../../../types";
 
 export class ContactForm extends Form {
   protected EmailInputEl: HTMLInputElement;
@@ -10,6 +10,7 @@ export class ContactForm extends Form {
   constructor(
     container: HTMLElement,
     protected events: IEvents,
+    protected data: Partial<IBuyer> = {},
   ) {
     super(container);
     this.EmailInputEl = ensureElement<HTMLInputElement>(
@@ -17,7 +18,8 @@ export class ContactForm extends Form {
       this.container,
     );
     this.EmailInputEl.addEventListener("input", () => {
-      events.emit("email:change", { email: this.EmailInputEl.value });
+      this.data.email = this.EmailInputEl.value;
+      this.onChange();
     });
 
     this.PhoneInputEl = ensureElement<HTMLInputElement>(
@@ -25,7 +27,8 @@ export class ContactForm extends Form {
       this.container,
     );
     this.PhoneInputEl.addEventListener("input", () => {
-      events.emit("phone:change", { phone: this.PhoneInputEl.value });
+      this.data.phone = this.PhoneInputEl.value;
+      this.onChange();
     });
 
     this.buttonEl.addEventListener("click", (e) => {
@@ -34,7 +37,11 @@ export class ContactForm extends Form {
     });
   }
 
-  onChange(value: TBuyerErrors) {
+  onChange() {
+    this.events.emit("buyer:change", this.data);
+  }
+
+  setValidationErrors(value: TBuyerErrors) {
     const validation = value;
     const isValid = this.checkValidation(validation);
 
@@ -42,6 +49,7 @@ export class ContactForm extends Form {
   }
 
   clear(): void {
+    this.data = {};
     this.EmailInputEl.value = "";
     this.PhoneInputEl.value = "";
   }

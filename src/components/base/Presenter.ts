@@ -1,4 +1,4 @@
-import { IBuyer, IProduct, TPayment } from "../../types";
+import { IBuyer, IProduct } from "../../types";
 import { cloneTemplate } from "../../utils/utils";
 import { Basket } from "../models/Basket";
 import { Buyer } from "../models/Buyer";
@@ -13,6 +13,7 @@ import { Gallery } from "../view/Gallery";
 import { Header } from "../view/Header";
 import { Modal } from "../view/Modal";
 import { Success } from "../view/Success";
+import { ApiCommunication } from "./ApiCommunication";
 import { IEvents } from "./Events";
 
 export class Presenter {
@@ -29,6 +30,7 @@ export class Presenter {
   protected orderForm: OrderForm;
   protected events: IEvents;
   protected cart: Cart;
+  protected api: ApiCommunication;
 
   constructor(
     buyer: Buyer,
@@ -44,20 +46,22 @@ export class Presenter {
     orderForm: OrderForm,
     events: IEvents,
     cart: Cart,
+    api: ApiCommunication,
   ) {
     this.buyer = buyer;
     this.basket = basket;
     this.catalog = catalog;
-    this.gallery = gallery; //
-    this.header = header; //
-    this.modal = modal; //
-    this.success = success; //
-    this.cardBasket = cardBasket; //
-    this.cardPreview = cardPreview; //
+    this.gallery = gallery;
+    this.header = header;
+    this.modal = modal;
+    this.success = success;
+    this.cardBasket = cardBasket;
+    this.cardPreview = cardPreview;
     this.contactForm = contactForm;
     this.orderForm = orderForm;
     this.events = events;
     this.cart = cart;
+    this.api = api;
 
     events.on("cart:add_product", (item: IProduct) =>
       this.cartAddProduct(item),
@@ -83,19 +87,20 @@ export class Presenter {
       this.openPreview(item);
     });
 
-    events.on("payment:change", (data: { payment: TPayment }) => {
+    events.on("order:open", () => {
+      this.renderOrderForm();
+    });
+
+    events.on("buyer:change", (data: Partial<IBuyer>) => {
       this.changeInfoBuyer(data);
     });
 
-    events.on("address:change", (data: { address: string }) => {
-      this.changeInfoBuyer(data);
+    events.on("order:submit", () => {
+      this.renderContactForm();
     });
 
-    events.on("email:change", (data: { email: string }) => {
-      this.changeInfoBuyer(data);
-    });
-    events.on("phone:change", (data: { phone: string }) => {
-      this.changeInfoBuyer(data);
+    events.on("order:succes", () => {
+      this.succesOpen();
     });
   }
 
@@ -141,7 +146,17 @@ export class Presenter {
     this.modal.render();
   }
 
+  succesOpen() {
+    this.success.total = this.basket.getCostProduct();
+    this.modal.content = this.success.render();
+  }
+
   succesClose() {
+    this.api.postOrder({
+      total: this.basket.getCostProduct(),
+      items: this.basket.getSelectedItems()!,
+      ...this.buyer.getInfoBuyer(),
+    });
     this.modal.close();
     this.basket.clearBasket();
     this.buyer.clean();
@@ -165,8 +180,18 @@ export class Presenter {
 
   changeInfoBuyer(data: Partial<IBuyer>) {
     this.buyer.setInfoBuyer(data);
-    this.orderForm.onChange(this.buyer.validate());
+
+    this.orderForm.setValidationErrors(this.buyer.validate());
     this.orderForm.togglePaymentButton(this.buyer.getInfoBuyer().payment);
-    this.contactForm.onChange(this.buyer.validate());
+
+    this.contactForm.setValidationErrors(this.buyer.validate());
+  }
+
+  renderOrderForm() {
+    this.modal.content = this.orderForm.render();
+  }
+
+  renderContactForm() {
+    this.modal.content = this.contactForm.render();
   }
 }

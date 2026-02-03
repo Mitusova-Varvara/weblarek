@@ -1,7 +1,7 @@
 import { ensureElement } from "../../../utils/utils";
 import { Form } from "./Form";
 import { IEvents } from "../../base/Events";
-import { TBuyerErrors } from "../../../types";
+import { IBuyer, TBuyerErrors } from "../../../types";
 import { TPayment } from "../../../types";
 
 export class OrderForm extends Form {
@@ -12,6 +12,7 @@ export class OrderForm extends Form {
   constructor(
     container: HTMLElement,
     protected events: IEvents,
+    protected data: Partial<IBuyer> = {},
   ) {
     super(container);
     this.cashButtonEl = ensureElement<HTMLButtonElement>(
@@ -19,7 +20,8 @@ export class OrderForm extends Form {
       this.container,
     );
     this.cashButtonEl.addEventListener("click", () => {
-      events.emit("payment:change", { payment: "cash" });
+      this.data.payment = "cash";
+      this.onChange();
     });
 
     this.cardButtonEl = ensureElement<HTMLButtonElement>(
@@ -27,7 +29,8 @@ export class OrderForm extends Form {
       this.container,
     );
     this.cardButtonEl.addEventListener("click", () => {
-      events.emit("payment:change", { payment: "online" });
+      this.data.payment = "online";
+      this.onChange();
     });
 
     this.inputEl = ensureElement<HTMLInputElement>(
@@ -35,7 +38,8 @@ export class OrderForm extends Form {
       this.container,
     );
     this.inputEl.addEventListener("input", () => {
-      events.emit("address:change", { address: this.inputEl.value });
+      this.data.address = this.inputEl.value;
+      this.onChange();
     });
 
     this.buttonEl.addEventListener("click", (e) => {
@@ -45,12 +49,18 @@ export class OrderForm extends Form {
   }
 
   clear(): void {
+    this.data = {};
     this.cardButtonEl.classList.remove("button_alt-active");
     this.cashButtonEl.classList.remove("button_alt-active");
     this.inputEl.value = "";
+    this.onChange();
   }
 
-  onChange(value: TBuyerErrors) {
+  onChange() {
+    this.events.emit("buyer:change", this.data);
+  }
+
+  setValidationErrors(value: TBuyerErrors) {
     const validation = value;
     const isValid = this.checkValidation(validation);
 
