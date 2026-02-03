@@ -39,6 +39,7 @@ export class Cart extends Component<IBasket> {
       // this.listBasketEl.textContent = "Корзина пуста";
       this.basketButtonEl.disabled = true;
     } else {
+      console.log("set items list:", list);
       this.listBasketEl.replaceChildren(...list);
     }
   }

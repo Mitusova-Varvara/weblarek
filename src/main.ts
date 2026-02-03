@@ -28,9 +28,6 @@ class Presenter {
 
 // проверка работоспособности класса CatalogueProduct
 const product = new CatalogueProduct();
-product.setItems(apiProducts.items); //сохраняем массив товаров
-const allProduct = product.getItems();
-console.log("Массив товаров из католога:", allProduct); // массив товаров из католога
 
 const basket = new Basket();
 
@@ -76,6 +73,7 @@ let success = new Success(cloneTemplate<HTMLElement>("#success"), events);
 const headerContainer = document.querySelector(".header") as HTMLElement;
 
 const header = new Header(headerContainer, events);
+basket.clearBasket();
 
 console.log(basket.getSelectedItems());
 
@@ -87,8 +85,6 @@ const cardPreview = new CardPreview(
 
 events.on("product:select", (item: IProduct) => {
   product.setItemId(item);
-
-  console.log(basket.getSelectedItems());
   modal.render();
   modal.open(cardPreview.render(item));
 });
@@ -105,11 +101,16 @@ events.on("cart:add_product", (item: IProduct) => {
   }
 });
 
+const cardBasket = new CardBasket(
+  cloneTemplate<HTMLElement>("#card-basket"),
+  events,
+);
+
 events.on("basket:open", () => {
   let basketProducts = (basket.getSelectedItems() || []).map((item, index) =>
     new CardBasket(cloneTemplate<HTMLElement>("#card-basket"), events).render({
       component: item,
-      index,
+      index: index,
     }),
   );
   const basketel = new Cart(
@@ -119,6 +120,7 @@ events.on("basket:open", () => {
     items: basketProducts,
     total: basket.getCostProduct(),
   });
+  console.log("basketProducts", basketProducts);
   modal.render();
   modal.open(basketel);
 });
@@ -162,5 +164,6 @@ events.on("order:succes", () => {
 events.on("succes:close", () => {
   modal.close();
   basket.clearBasket();
+  buyer.clean();
   header.count = basket.getCount();
 });

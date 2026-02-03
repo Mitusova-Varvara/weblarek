@@ -39,6 +39,8 @@ export class CardBasket extends Card<ICardBasket> {
 
   render(product: ICardBasket): HTMLElement {
     super.render(product);
+    this.title = product.component.title;
+    this.price = product.component.price;
     this.curentItem = product.component;
     return this.container;
   }
