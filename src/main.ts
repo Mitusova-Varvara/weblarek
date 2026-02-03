@@ -18,8 +18,13 @@ import { ContactForm } from "./components/view/form/ContactForm";
 import { EventEmitter } from "./components/base/Events";
 import { IProduct, TPayment } from "./types";
 import { Header } from "./components/view/Header";
+import { Success } from "./components/view/Success";
 
 let events = new EventEmitter();
+
+class Presenter {
+  constructor() {}
+}
 
 // проверка работоспособности класса CatalogueProduct
 const product = new CatalogueProduct();
@@ -58,39 +63,72 @@ let cardPreviewTempalte = cloneTemplate<HTMLElement>("#card-preview");
 let contactForm = new ContactForm(
   cloneTemplate<HTMLElement>("#contacts"),
   events,
+  buyer,
 ).render();
 
 //modal.render();
 //modal.open(contactForm);
 
-//let success = new Success(cloneTemplate<HTMLElement>("#success")).render();
+let success = new Success(cloneTemplate<HTMLElement>("#success"), events);
 //modal.render();
 //modal.open(success);
 
 const headerContainer = document.querySelector(".header") as HTMLElement;
 
-new Header(headerContainer, events);
+const header = new Header(headerContainer, events);
+
+console.log(basket.getSelectedItems());
+
+const cardPreview = new CardPreview(
+  cloneTemplate<HTMLElement>("#card-preview"),
+  events,
+  basket,
+);
 
 events.on("product:select", (item: IProduct) => {
   product.setItemId(item);
 
-  const cardPreview = new CardPreview(
-    cloneTemplate<HTMLElement>("#card-preview"),
-    events,
-    basket,
-  ).render(item);
-
+  console.log(basket.getSelectedItems());
   modal.render();
-  modal.open(cardPreview);
+  modal.open(cardPreview.render(item));
 });
 
-basket.clearBasket();
+events.on("cart:add_product", (item: IProduct) => {
+  if (!basket.hasProduct(item)) {
+    basket.addItem(item);
+    cardPreview.renderButtonText(basket.hasProduct(item));
+    header.count = basket.getCount();
+  } else {
+    basket.removeItem(item);
+    cardPreview.renderButtonText(basket.hasProduct(item));
+    header.count = basket.getCount();
+  }
+});
 
 events.on("basket:open", () => {
-  // тут рисуется пустой массив, надо придумать как исправить на null
   let basketProducts = (basket.getSelectedItems() || []).map((item, index) =>
-    new CardBasket(cloneTemplate<HTMLElement>("#card-basket")).render({
-      ...item,
+    new CardBasket(cloneTemplate<HTMLElement>("#card-basket"), events).render({
+      component: item,
+      index,
+    }),
+  );
+  const basketel = new Cart(
+    cloneTemplate<HTMLElement>("#basket"),
+    events,
+  ).render({
+    items: basketProducts,
+    total: basket.getCostProduct(),
+  });
+  modal.render();
+  modal.open(basketel);
+});
+
+events.on("product:delet", (item: IProduct) => {
+  basket.removeItem(item);
+
+  let basketProducts = (basket.getSelectedItems() || []).map((item, index) =>
+    new CardBasket(cloneTemplate<HTMLElement>("#card-basket"), events).render({
+      component: item,
       index,
     }),
   );
@@ -111,9 +149,18 @@ events.on("order:open", () => {
   modal.content = form.render();
 });
 
-console.log(buyer.getInfoBuyer());
-
 events.on("order:submit", () => {
   modal.content = contactForm;
   modal.render();
+});
+
+events.on("order:succes", () => {
+  success.total = basket.getCostProduct();
+  modal.content = success.render();
+});
+
+events.on("succes:close", () => {
+  modal.close();
+  basket.clearBasket();
+  header.count = basket.getCount();
 });

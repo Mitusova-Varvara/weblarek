@@ -39,19 +39,7 @@ export class CardPreview extends Card<TCardPreview> {
     );
     this.buttonEl.addEventListener("click", () => {
       if (this.curentItem) {
-        if (!basket.hasProduct(this.curentItem)) {
-          this.basket.addItem(this.curentItem);
-        } else {
-          basket.removeItem(this.curentItem);
-        }
-
-        this.events.emit("basket:count_changed", {
-          count: this.basket.getCount(),
-        });
-
-        this.buttonEl.textContent = this.basket.hasProduct(this.curentItem)
-          ? "Удалить из корзины"
-          : "В корзину";
+        events.emit("cart:add_product", this.curentItem);
       }
     });
   }

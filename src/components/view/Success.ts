@@ -1,15 +1,29 @@
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
+import { IEvents } from "../base/Events";
+import { IApiGet } from "../../types";
 
-export class Success extends Component<HTMLElement> {
+export class Success extends Component<IApiGet> {
   protected totalCostEl: HTMLElement;
+  protected closeButton: HTMLButtonElement;
 
-  constructor(container: HTMLElement) {
+  constructor(
+    container: HTMLElement,
+    protected events: IEvents,
+  ) {
     super(container);
     this.totalCostEl = ensureElement<HTMLElement>(
       ".order-success__description",
       this.container,
     );
+
+    this.closeButton = ensureElement<HTMLButtonElement>(
+      ".order-success__close",
+      this.container,
+    );
+    this.closeButton.addEventListener("click", () => {
+      events.emit("succes:close");
+    });
   }
 
   set total(value: number) {
