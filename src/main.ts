@@ -145,7 +145,18 @@ events.on("product:delet", (item: IProduct) => {
   modal.open(basketel);
 });
 
-const form = new OrderForm(cloneTemplate<HTMLElement>("#order"), events, buyer);
+const form = new OrderForm(cloneTemplate<HTMLElement>("#order"), events);
+
+events.on("payment:change", (data: { payment: TPayment }) => {
+  buyer.setPayment(data.payment);
+  form.onChange(buyer.validate());
+  form.togglePaymentButton(data.payment);
+});
+
+events.on("address:change", (data: { address: string }) => {
+  buyer.setAddress(data.address);
+  form.onChange(buyer.validate());
+});
 
 events.on("order:open", () => {
   modal.content = form.render();

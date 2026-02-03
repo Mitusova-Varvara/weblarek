@@ -2,7 +2,7 @@ import { ensureElement } from "../../../utils/utils";
 import { Form } from "./Form";
 import { IEvents } from "../../base/Events";
 import { TBuyerErrors } from "../../../types";
-import { Buyer } from "../../models/Buyer";
+import { TPayment } from "../../../types";
 
 export class OrderForm extends Form {
   protected cashButtonEl: HTMLButtonElement;
@@ -12,7 +12,6 @@ export class OrderForm extends Form {
   constructor(
     container: HTMLElement,
     protected events: IEvents,
-    protected buyer: Buyer,
   ) {
     super(container);
     this.cashButtonEl = ensureElement<HTMLButtonElement>(
@@ -20,17 +19,15 @@ export class OrderForm extends Form {
       this.container,
     );
     this.cashButtonEl.addEventListener("click", () => {
-      this.buyer.setPayment("cash");
-      this.onChange();
+      events.emit("payment:change", { payment: "cash" });
     });
+
     this.cardButtonEl = ensureElement<HTMLButtonElement>(
       'button[name="card"]',
       this.container,
     );
-
     this.cardButtonEl.addEventListener("click", () => {
-      this.buyer.setPayment("online");
-      this.onChange();
+      events.emit("payment:change", { payment: "online" });
     });
 
     this.inputEl = ensureElement<HTMLInputElement>(
@@ -38,8 +35,7 @@ export class OrderForm extends Form {
       this.container,
     );
     this.inputEl.addEventListener("input", () => {
-      this.buyer.setAddress(this.inputEl.value);
-      this.onChange();
+      events.emit("address:change", { address: this.inputEl.value });
     });
 
     this.buttonEl.addEventListener("click", (e) => {
@@ -52,17 +48,15 @@ export class OrderForm extends Form {
     this.inputEl.value = "";
   }
 
-  onChange() {
-    const validation = this.buyer.validate();
+  onChange(value: TBuyerErrors) {
+    const validation = value;
     const isValid = this.checkValidation(validation);
 
     this.setSubmitEnabled(isValid);
-    this.togglePaymentButton();
   }
 
-  togglePaymentButton(): void {
+  togglePaymentButton(payment: TPayment): void {
     const altActiveClassName = "button_alt-active";
-    const payment = this.buyer.getInfoBuyer().payment;
 
     if (payment == "cash") {
       this.cashButtonEl.classList.add(altActiveClassName);
