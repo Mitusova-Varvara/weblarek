@@ -60,22 +60,15 @@ let cardPreviewTempalte = cloneTemplate<HTMLElement>("#card-preview");
 let contactForm = new ContactForm(
   cloneTemplate<HTMLElement>("#contacts"),
   events,
-  buyer,
-).render();
-
-//modal.render();
-//modal.open(contactForm);
+);
+contactForm.render();
 
 let success = new Success(cloneTemplate<HTMLElement>("#success"), events);
-//modal.render();
-//modal.open(success);
 
 const headerContainer = document.querySelector(".header") as HTMLElement;
 
 const header = new Header(headerContainer, events);
 basket.clearBasket();
-
-console.log(basket.getSelectedItems());
 
 const cardPreview = new CardPreview(
   cloneTemplate<HTMLElement>("#card-preview"),
@@ -158,13 +151,22 @@ events.on("address:change", (data: { address: string }) => {
   form.onChange(buyer.validate());
 });
 
+events.on("email:change", (data: { email: string }) => {
+  buyer.setEmail(data.email);
+  contactForm.onChange(buyer.validate());
+});
+
+events.on("phone:change", (data: { phone: string }) => {
+  buyer.setPhone(data.phone);
+  contactForm.onChange(buyer.validate());
+});
+
 events.on("order:open", () => {
   modal.content = form.render();
 });
 
 events.on("order:submit", () => {
-  modal.content = contactForm;
-  modal.render();
+  modal.content = contactForm.render();
 });
 
 events.on("order:succes", () => {
@@ -176,5 +178,7 @@ events.on("succes:close", () => {
   modal.close();
   basket.clearBasket();
   buyer.clean();
+  form.clear();
+  contactForm.clear();
   header.count = basket.getCount();
 });

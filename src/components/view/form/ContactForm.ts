@@ -2,7 +2,6 @@ import { ensureElement } from "../../../utils/utils";
 import { Form } from "./Form";
 import { IEvents } from "../../base/Events";
 import { TBuyerErrors } from "../../../types";
-import { Buyer } from "../../models/Buyer";
 
 export class ContactForm extends Form {
   protected EmailInputEl: HTMLInputElement;
@@ -11,7 +10,6 @@ export class ContactForm extends Form {
   constructor(
     container: HTMLElement,
     protected events: IEvents,
-    protected buyer: Buyer,
   ) {
     super(container);
     this.EmailInputEl = ensureElement<HTMLInputElement>(
@@ -19,8 +17,7 @@ export class ContactForm extends Form {
       this.container,
     );
     this.EmailInputEl.addEventListener("input", () => {
-      this.buyer.setEmail(this.EmailInputEl.value);
-      this.onChange();
+      events.emit("email:change", { email: this.EmailInputEl.value });
     });
 
     this.PhoneInputEl = ensureElement<HTMLInputElement>(
@@ -28,8 +25,7 @@ export class ContactForm extends Form {
       this.container,
     );
     this.PhoneInputEl.addEventListener("input", () => {
-      this.buyer.setPhone(this.PhoneInputEl.value);
-      this.onChange();
+      events.emit("phone:change", { phone: this.PhoneInputEl.value });
     });
 
     this.buttonEl.addEventListener("click", (e) => {
@@ -38,8 +34,8 @@ export class ContactForm extends Form {
     });
   }
 
-  onChange() {
-    const validation = this.buyer.validate();
+  onChange(value: TBuyerErrors) {
+    const validation = value;
     const isValid = this.checkValidation(validation);
 
     this.setSubmitEnabled(isValid);

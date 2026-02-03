@@ -45,6 +45,8 @@ export class OrderForm extends Form {
   }
 
   clear(): void {
+    this.cardButtonEl.classList.remove("button_alt-active");
+    this.cashButtonEl.classList.remove("button_alt-active");
     this.inputEl.value = "";
   }
 
