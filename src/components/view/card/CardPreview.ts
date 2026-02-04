@@ -6,7 +6,19 @@ import { categoryMap } from "../../../utils/constants";
 
 type TCardPreview = Pick<IProduct, "image" | "category" | "description">;
 
-export class CardPreview extends Card<TCardPreview> {
+export interface CardPreviewInterface {
+  set image(value: string);
+  set category(value: string);
+  set description(value: string);
+  set button(value: string);
+  renderButtonText(value: boolean): void;
+  render(product: IProduct): HTMLElement;
+}
+
+export class CardPreview
+  extends Card<TCardPreview>
+  implements CardPreviewInterface
+{
   protected imageEl: HTMLImageElement;
   protected categoryEl: HTMLElement;
   protected descriptionEl: HTMLElement;

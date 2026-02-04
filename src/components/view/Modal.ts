@@ -1,7 +1,13 @@
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 
-export class Modal extends Component<HTMLElement> {
+export interface ModalInterface extends Component<HTMLElement> {
+  set content(value: HTMLElement);
+  open(value: HTMLElement): void;
+  close(): void;
+}
+
+export class Modal extends Component<HTMLElement> implements ModalInterface {
   protected contentEl: HTMLElement;
   protected buttonEl: HTMLButtonElement;
 
@@ -30,12 +36,12 @@ export class Modal extends Component<HTMLElement> {
     this.contentEl.replaceChildren(value);
   }
 
-  open(value: HTMLElement) {
+  open(value: HTMLElement): void {
     this.container.classList.add("modal_active");
     this.contentEl.replaceChildren(value);
   }
 
-  close() {
+  close(): void {
     this.container.classList.remove("modal_active");
   }
 }

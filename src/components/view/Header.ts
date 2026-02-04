@@ -6,7 +6,11 @@ interface IHeader {
   counter: number;
 }
 
-export class Header extends Component<IHeader> {
+export interface HeaderInterface {
+  set count(value: number);
+}
+
+export class Header extends Component<IHeader> implements HeaderInterface {
   protected counterEl: HTMLElement;
   protected buttonEl: HTMLButtonElement;
 

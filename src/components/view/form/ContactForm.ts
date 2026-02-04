@@ -3,7 +3,12 @@ import { Form } from "./Form";
 import { IEvents } from "../../base/Events";
 import { TBuyerErrors } from "../../../types";
 
-export class ContactForm extends Form {
+export interface ContactFormInterface extends Form {
+  clear(): void;
+  checkValidation(message: TBuyerErrors): boolean;
+}
+
+export class ContactForm extends Form implements ContactFormInterface {
   protected emailInputEl: HTMLInputElement;
   protected phoneInputEl: HTMLInputElement;
 
@@ -32,13 +37,6 @@ export class ContactForm extends Form {
       e.preventDefault();
       this.events.emit("order:succes");
     });
-  }
-
-  setValidationErrors(value: TBuyerErrors) {
-    const validation = value;
-    const isValid = this.checkValidation(validation);
-
-    this.setSubmitEnabled(isValid);
   }
 
   clear(): void {

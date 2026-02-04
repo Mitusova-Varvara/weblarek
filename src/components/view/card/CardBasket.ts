@@ -25,12 +25,7 @@ export class CardBasket extends Card<ICardBasket> {
       this.container.addEventListener("click", actions.onClick);
     }
   }
-
   set index(value: number) {
     this.indexEl.textContent = String((value || 0) + 1);
-  }
-
-  set id(value: string) {
-    this.container.dataset.id = value;
   }
 }

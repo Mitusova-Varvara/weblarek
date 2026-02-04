@@ -5,9 +5,15 @@ import { IEvents } from "../base/Events";
 interface IBasket {
   items: HTMLElement[];
   total: number;
+  render: HTMLElement;
 }
 
-export class Cart extends Component<IBasket> {
+export interface CartInterface extends Component<IBasket> {
+  set items(list: HTMLElement[]);
+  set total(value: number);
+}
+
+export class Cart extends Component<IBasket> implements CartInterface {
   protected listBasketEl: HTMLElement;
   protected basketButtonEl: HTMLButtonElement;
   protected totalPriceEl: HTMLElement;

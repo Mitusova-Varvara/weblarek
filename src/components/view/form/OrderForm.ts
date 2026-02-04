@@ -4,7 +4,13 @@ import { IEvents } from "../../base/Events";
 import { TBuyerErrors } from "../../../types";
 import { TPayment } from "../../../types";
 
-export class OrderForm extends Form {
+export interface OrderFormInterface extends Form {
+  clear(): void;
+  togglePaymentButton(payment: TPayment): void;
+  checkValidation(message: TBuyerErrors): boolean;
+}
+
+export class OrderForm extends Form implements OrderFormInterface {
   protected cashButtonEl: HTMLButtonElement;
   protected cardButtonEl: HTMLButtonElement;
   protected inputEl: HTMLInputElement;
@@ -48,10 +54,6 @@ export class OrderForm extends Form {
     this.cardButtonEl.classList.remove("button_alt-active");
     this.cashButtonEl.classList.remove("button_alt-active");
     this.inputEl.value = "";
-  }
-
-  setValidationErrors(value: boolean) {
-    this.setSubmitEnabled(value);
   }
 
   togglePaymentButton(payment: TPayment): void {

@@ -9,7 +9,6 @@ import { cloneTemplate, ensureElement } from "./utils/utils";
 import { Modal } from "./components/view/Modal";
 import { CardPreview } from "./components/view/card/CardPreview";
 import { Gallery } from "./components/view/Gallery";
-import { CardBasket } from "./components/view/card/CardBasket";
 import { Cart } from "./components/view/Cart";
 import { OrderForm } from "./components/view/form/OrderForm";
 import { ContactForm } from "./components/view/form/ContactForm";
@@ -26,7 +25,6 @@ const gallery = new Gallery(ensureElement<HTMLElement>(".gallery"));
 const header = new Header(ensureElement<HTMLElement>(".header"), events);
 const modal = new Modal(ensureElement<HTMLElement>(".modal"));
 const success = new Success(cloneTemplate<HTMLElement>("#success"), events);
-const cardBasket = new CardBasket(cloneTemplate<HTMLElement>("#card-basket"));
 const cardPreview = new CardPreview(
   cloneTemplate<HTMLElement>("#card-preview"),
   {
@@ -52,7 +50,6 @@ new Presenter(
   header,
   modal,
   success,
-  cardBasket,
   cardPreview,
   contactForm,
   form,

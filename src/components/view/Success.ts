@@ -3,7 +3,11 @@ import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 import { IApiGet } from "../../types";
 
-export class Success extends Component<IApiGet> {
+export interface SuccessInterface extends Component<IApiGet> {
+  set total(value: number);
+}
+
+export class Success extends Component<IApiGet> implements SuccessInterface {
   protected totalCostEl: HTMLElement;
   protected closeButton: HTMLButtonElement;
 
