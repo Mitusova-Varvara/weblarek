@@ -15,7 +15,7 @@ import { ContactForm } from "./components/view/form/ContactForm";
 import { EventEmitter } from "./components/base/Events";
 import { Header } from "./components/view/Header";
 import { Success } from "./components/view/Success";
-import { Presenter } from "./components/Presenter";
+import { Presenter } from "./components/presenter/Presenter";
 
 const events = new EventEmitter();
 const buyer = new Buyer(events);
