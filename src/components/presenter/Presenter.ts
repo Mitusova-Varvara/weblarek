@@ -1,20 +1,20 @@
-import { IProduct, TPayment } from "../types";
-import { cloneTemplate } from "../utils/utils";
-import { BasketInterface } from "./models/Basket";
-import { BuyerInterface } from "./models/Buyer";
-import { CatalogueProductInterface } from "./models/CatalogueProduct";
-import { CardBasket } from "./view/card/CardBasket";
-import { CardCatalog } from "./view/card/CardCatalog";
-import { CardPreview, CardPreviewInterface } from "./view/card/CardPreview";
-import { CartInterface } from "./view/Cart";
-import { ContactFormInterface } from "./view/form/ContactForm";
-import { OrderFormInterface } from "./view/form/OrderForm";
-import { GalleryInterface } from "./view/Gallery";
-import { HeaderInterface } from "./view/Header";
-import { ModalInterface } from "./view/Modal";
-import { SuccessInterface } from "./view/Success";
-import { ApiCommunicationInterface } from "./base/ApiCommunication";
-import { IEvents } from "./base/Events";
+import { IProduct, TPayment } from "../../types";
+import { cloneTemplate } from "../../utils/utils";
+import { BasketInterface } from "../models/Basket";
+import { BuyerInterface } from "../models/Buyer";
+import { CatalogueProductInterface } from "../models/CatalogueProduct";
+import { CardBasket } from "../view/card/CardBasket";
+import { CardCatalog } from "../view/card/CardCatalog";
+import { CardPreview, CardPreviewInterface } from "../view/card/CardPreview";
+import { CartInterface } from "../view/Cart";
+import { ContactFormInterface } from "../view/form/ContactForm";
+import { OrderFormInterface } from "../view/form/OrderForm";
+import { GalleryInterface } from "../view/Gallery";
+import { HeaderInterface } from "../view/Header";
+import { ModalInterface } from "../view/Modal";
+import { SuccessInterface } from "../view/Success";
+import { ApiCommunicationInterface } from "../base/ApiCommunication";
+import { IEvents } from "../base/Events";
 
 export class Presenter {
   protected buyer: BuyerInterface;
