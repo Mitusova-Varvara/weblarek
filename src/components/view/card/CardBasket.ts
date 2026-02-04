@@ -4,14 +4,13 @@ import { Card } from "./Card";
 import { IEvents } from "../../base/Events";
 
 type ICardBasket = {
-  component: IProduct;
+  component: Pick<IProduct, "id">;
   index?: number;
 };
 
 export class CardBasket extends Card<ICardBasket> {
   protected indexEl: HTMLElement;
   protected deletButtonEl: HTMLButtonElement;
-  private curentItem: IProduct | null = null;
 
   constructor(
     container: HTMLElement,
@@ -27,9 +26,9 @@ export class CardBasket extends Card<ICardBasket> {
       this.container,
     );
     this.deletButtonEl.addEventListener("click", () => {
-      if (this.curentItem) {
-        this.events.emit("product:delete", this.curentItem);
-      }
+      let id = this.container.dataset.id;
+      console.log(id);
+      this.events.emit("product:delete", { item: id });
     });
   }
 
@@ -37,11 +36,7 @@ export class CardBasket extends Card<ICardBasket> {
     this.indexEl.textContent = String((value || 0) + 1);
   }
 
-  render(product: ICardBasket): HTMLElement {
-    super.render(product);
-    this.title = product.component.title;
-    this.price = product.component.price;
-    this.curentItem = product.component;
-    return this.container;
+  set id(value: string) {
+    this.container.dataset.id = value;
   }
 }

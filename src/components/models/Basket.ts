@@ -1,8 +1,11 @@
 import { IProduct } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class Basket {
   //хранит массив товаров, выбранных покупателем для покупки.
   private selectedItems: IProduct[] = [];
+
+  constructor(private events: EventEmitter) {}
 
   //получение массива товаров, которые находятся в корзине;
   getSelectedItems(): IProduct[] | null {
@@ -26,6 +29,7 @@ export class Basket {
     if (this.selectedItems.includes(item)) {
       this.selectedItems = this.selectedItems.filter((p) => p.id != item.id);
     }
+    this.events.emit("basket:changed");
   }
 
   //очистка корзины;
@@ -37,7 +41,7 @@ export class Basket {
   getCostProduct(): number {
     return this.selectedItems.reduce(
       (acc, product) => acc + (product.price ?? 0),
-      0
+      0,
     );
   }
 

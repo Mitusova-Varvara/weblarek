@@ -17,22 +17,22 @@ export class Buyer {
 
   setPayment(payment: TPayment): void {
     this.payment = payment;
-    this.events.emit("buyer:changed", { field: "payment" });
+    this.events.emit("buyer:change", { value: "payment" });
   }
 
   setAddress(address: string): void {
     this.address = address;
-    this.events.emit("buyer:changed", { field: "address" });
+    this.events.emit("buyer:change", { value: "address" });
   }
 
   setEmail(email: string): void {
     this.email = email;
-    this.events.emit("buyer:changed", { field: "email" });
+    this.events.emit("buyer:change", { value: "email" });
   }
 
   setPhone(phone: string): void {
     this.phone = phone;
-    this.events.emit("buyer:changed", { field: "phone" });
+    this.events.emit("buyer:change", { value: "phone" });
   }
 
   //получение всех данных покупателя;

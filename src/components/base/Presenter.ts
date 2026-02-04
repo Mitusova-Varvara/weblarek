@@ -1,4 +1,4 @@
-import { IBuyer, IProduct } from "../../types";
+import { IBuyer, IProduct, TPayment } from "../../types";
 import { cloneTemplate } from "../../utils/utils";
 import { Basket } from "../models/Basket";
 import { Buyer } from "../models/Buyer";
@@ -79,8 +79,15 @@ export class Presenter {
       this.succesClose();
     });
 
-    events.on("product:delete", (item: IProduct) => {
-      this.productDeleteFromCart(item);
+    events.on("product:delete", (data: { item: string }) => {
+      let currentItem = this.catalog.getItemId(data.item);
+      this.basket.removeItem(currentItem!);
+      console.log(currentItem);
+    });
+
+    events.on("basket:changed", () => {
+      this.header.count = this.basket.getCount();
+      this.renderBasket();
     });
 
     events.on("product:select", (item: IProduct) => {
@@ -91,7 +98,22 @@ export class Presenter {
       this.renderOrderForm();
     });
 
-    events.on("buyer:change", (data: Partial<IBuyer>) => {
+    events.on("payment:change", (data: { payment: TPayment }) => {
+      this.buyer.setPayment(data.payment);
+    });
+
+    events.on("address:change", (data: { address: string }) => {
+      this.buyer.setAddress(data.address);
+    });
+
+    events.on("email:change", (data: { email: string }) => {
+      this.buyer.setEmail(data.email);
+    });
+    events.on("phone:change", (data: { phone: string }) => {
+      this.buyer.setPhone(data.phone);
+    });
+
+    events.on("buyer:change", (data: { value: string }) => {
       this.changeInfoBuyer(data);
     });
 
@@ -134,7 +156,7 @@ export class Presenter {
           cloneTemplate<HTMLElement>("#card-basket"),
           this.events,
         ).render({
-          component: item,
+          ...item,
           index: index,
         }),
     );
@@ -178,13 +200,14 @@ export class Presenter {
     this.modal.open(this.cardPreview.render(item));
   }
 
-  changeInfoBuyer(data: Partial<IBuyer>) {
-    this.buyer.setInfoBuyer(data);
-
-    this.orderForm.setValidationErrors(this.buyer.validate());
-    this.orderForm.togglePaymentButton(this.buyer.getInfoBuyer().payment);
-
-    this.contactForm.setValidationErrors(this.buyer.validate());
+  changeInfoBuyer(data: { value: string }) {
+    if (data.value === "payment" || data.value === "address") {
+      let isValid = this.orderForm.checkValidation(this.buyer.validate());
+      this.orderForm.setSubmitEnabled(isValid);
+      this.orderForm.togglePaymentButton(this.buyer.getInfoBuyer().payment);
+    } else if (data.value === "email" || data.value === "phone") {
+      this.contactForm.setValidationErrors(this.buyer.validate());
+    }
   }
 
   renderOrderForm() {

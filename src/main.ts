@@ -20,7 +20,7 @@ import { Presenter } from "./components/base/Presenter";
 
 const events = new EventEmitter();
 const buyer = new Buyer(events);
-const basket = new Basket();
+const basket = new Basket(events);
 const product = new CatalogueProduct();
 const gallery = new Gallery(ensureElement<HTMLElement>(".gallery"));
 const header = new Header(ensureElement<HTMLElement>(".header"), events);

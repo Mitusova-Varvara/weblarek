@@ -50,26 +50,21 @@ export class OrderForm extends Form {
     this.inputEl.value = "";
   }
 
-  setValidationErrors(value: TBuyerErrors) {
-    const validation = value;
-    const isValid = this.checkValidation(validation);
-
-    this.setSubmitEnabled(isValid);
+  setValidationErrors(value: boolean) {
+    this.setSubmitEnabled(value);
   }
 
   togglePaymentButton(payment: TPayment): void {
     const altActiveClassName = "button_alt-active";
-
-    if (payment == "cash") {
-      this.cashButtonEl.classList.add(altActiveClassName);
-      this.cardButtonEl.classList.remove(altActiveClassName);
-    } else if (payment == "online") {
-      this.cashButtonEl.classList.remove(altActiveClassName);
-      this.cardButtonEl.classList.add(altActiveClassName);
-    }
+    this.cashButtonEl.classList.toggle(altActiveClassName, payment === "cash");
+    this.cardButtonEl.classList.toggle(
+      altActiveClassName,
+      payment === "online",
+    );
   }
 
   checkValidation(message: TBuyerErrors): boolean {
+    this.error = "";
     this.error = message.payment || message.address || "";
     return !message.payment && !message.address;
   }
