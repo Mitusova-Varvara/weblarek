@@ -62,33 +62,43 @@ export class Presenter {
     this.events = events;
     this.cart = cart;
     this.api = api;
-
+    //
     events.on("cart:add_product", (product: IProduct) => {
-      this.cartAddProduct(product);
-    });
-
+      this.catalog.setItemId(product);
+    }); //
+    //
     events.on("products:loaded", () => {
       this.renderGallery();
     });
-
+    //
     events.on("basket:open", () => {
       this.renderBasket();
     });
-
+    //
+    //
     events.on("succes:close", () => {
       this.succesClose();
     });
 
+    //
     events.on("product:delete", (product: IProduct) => {
       this.basket.removeItem(product);
+      this.renderBasket();
     });
-
+    //
     events.on("basket:changed", () => {
       this.header.count = this.basket.getCount();
     });
-
+    //
     events.on("product:select", (product: IProduct) => {
       this.openPreview(product);
+      this.modal.render();
+      this.modal.open(this.cardPreview.render(product));
+    });
+    //
+
+    events.on("selected:changed", (product: IProduct) => {
+      this.cartAddProduct(product);
     });
 
     events.on("order:open", () => {
@@ -127,11 +137,9 @@ export class Presenter {
     if (!this.basket.hasProduct(item)) {
       this.basket.addItem(item);
       this.cardPreview.renderButtonText(this.basket.hasProduct(item));
-      this.header.count = this.basket.getCount();
     } else {
       this.basket.removeItem(item);
       this.cardPreview.renderButtonText(this.basket.hasProduct(item));
-      this.header.count = this.basket.getCount();
     }
   }
 
@@ -192,10 +200,15 @@ export class Presenter {
   }
 
   openPreview(item: IProduct): void {
-    this.catalog.setItemId(item);
+    this.cardPreview = new CardPreview(
+      cloneTemplate<HTMLElement>("#card-preview"),
+      {
+        onClick: () => {
+          this.events.emit("cart:add_product", item);
+        },
+      },
+    );
     this.cardPreview.renderButtonText(this.basket.hasProduct(item));
-    this.modal.render();
-    this.modal.open(this.cardPreview.render(item));
   }
 
   changeInfoBuyer(data: { value: string }) {

@@ -21,7 +21,7 @@ import { Presenter } from "./components/base/Presenter";
 const events = new EventEmitter();
 const buyer = new Buyer(events);
 const basket = new Basket(events);
-const product = new CatalogueProduct();
+const product = new CatalogueProduct(events);
 const gallery = new Gallery(ensureElement<HTMLElement>(".gallery"));
 const header = new Header(ensureElement<HTMLElement>(".header"), events);
 const modal = new Modal(ensureElement<HTMLElement>(".modal"));

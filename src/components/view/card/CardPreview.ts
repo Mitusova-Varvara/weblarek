@@ -47,16 +47,18 @@ export class CardPreview extends Card<TCardPreview> {
     this.descriptionEl.textContent = value;
   }
 
+  set button(value: string) {
+    this.buttonEl.textContent = value;
+  }
+
   renderButtonText(value: boolean): void {
-    value
-      ? (this.buttonEl.textContent = "Удалить из корзины")
-      : (this.buttonEl.textContent = "В корзину");
+    value ? (this.button = "Удалить из корзины") : (this.button = "В корзину");
   }
 
   render(product: IProduct): HTMLElement {
     if (product.price === null) {
       this.buttonEl.setAttribute("disabled", "true");
-      this.buttonEl.textContent = "Недоступно";
+      this.button = "Недоступно";
     } else {
       this.buttonEl.removeAttribute("disabled");
     }

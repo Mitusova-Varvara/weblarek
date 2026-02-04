@@ -1,8 +1,11 @@
 import { IProduct } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class CatalogueProduct {
   private items: IProduct[] = []; //хранит массив всех товаров;
   private selectedItem: IProduct | null = null; //хранит товар, выбранный для подробного отображения или не выбран;
+
+  constructor(private events: EventEmitter) {}
 
   //получение массива товаров из модели;
   getItems(): IProduct[] {
@@ -22,6 +25,7 @@ export class CatalogueProduct {
   //сохранение товара для подробного отображения;
   setItemId(item: IProduct): void {
     this.selectedItem = item;
+    this.events.emit("selected:changed", item);
   }
 
   //получение товара для подробного отображения.

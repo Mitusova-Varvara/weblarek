@@ -22,6 +22,7 @@ export class Basket {
     if (!this.selectedItems.includes(item)) {
       this.selectedItems.push(item);
     }
+    this.events.emit("basket:changed");
   }
 
   //удаление товара, полученного в параметре из массива корзины;
