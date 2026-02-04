@@ -1,7 +1,15 @@
 import { IProduct } from "../../types";
 import { EventEmitter } from "../base/Events";
 
-export class CatalogueProduct {
+export interface CatalogueProductInterface {
+  getItems(): IProduct[];
+  setItems(items: IProduct[]): void;
+  getItemId(id: string): IProduct | undefined;
+  setItemId(item: IProduct): void;
+  getItem(): IProduct | null;
+}
+
+export class CatalogueProduct implements CatalogueProductInterface {
   private items: IProduct[] = []; //хранит массив всех товаров;
   private selectedItem: IProduct | null = null; //хранит товар, выбранный для подробного отображения или не выбран;
 

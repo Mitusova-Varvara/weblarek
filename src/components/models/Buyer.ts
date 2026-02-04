@@ -2,7 +2,18 @@ import { IBuyer, TPayment } from "../../types";
 import { TBuyerErrors } from "../../types";
 import { EventEmitter } from "../base/Events";
 
-export class Buyer {
+export interface BuyerInterface {
+  setInfoBuyer(data: Partial<IBuyer>): void;
+  setPayment(payment: TPayment): void;
+  setAddress(address: string): void;
+  setEmail(email: string): void;
+  setPhone(phone: string): void;
+  getInfoBuyer(): IBuyer;
+  clean(): void;
+  validate(): TBuyerErrors;
+}
+
+export class Buyer implements BuyerInterface {
   private payment: TPayment = null;
   private address: string = "";
   private email: string = "";
@@ -11,7 +22,7 @@ export class Buyer {
   constructor(private events: EventEmitter) {}
 
   //сохранение данных в модели.
-  setInfoBuyer(data: Partial<IBuyer>) {
+  setInfoBuyer(data: Partial<IBuyer>): void {
     Object.assign(this as object, data);
   }
 

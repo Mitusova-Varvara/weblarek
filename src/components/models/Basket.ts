@@ -1,7 +1,17 @@
 import { IProduct } from "../../types";
 import { EventEmitter } from "../base/Events";
 
-export class Basket {
+export interface BasketInterface {
+  getSelectedItems(): IProduct[] | null;
+  hasProduct(item: IProduct): boolean;
+  addItem(item: IProduct): void;
+  removeItem(item: IProduct): void;
+  clearBasket(): void;
+  getCostProduct(): number;
+  getCount(): number;
+}
+
+export class Basket implements BasketInterface {
   //хранит массив товаров, выбранных покупателем для покупки.
   private selectedItems: IProduct[] = [];
 

@@ -125,6 +125,13 @@ Presenter - презентер содержит основную логику п
 `private items: IProduct[] = []` - хранит массив всех товаров.
 `private selectedItem: IProduct | null` - хранит товар, выбранный для подробного отображения.
 
+Конструктор класса принимает параметры:
+`protected events: EventEmitter` - брокер событий
+
+Инициируется события:
+`products:loaded` - отображается галерея с товарами.
+`selected:changed` - реакция на изменение карточки товара.
+
 Методы класса:
 `getItems(): IProduct[] { return this.items}` - получение массива товаров из модели.
 `setItems(items: IProduct[]): void {this.items = items}` - сохранение массива товаров полученного в параметрах метода.
@@ -136,6 +143,12 @@ Presenter - презентер содержит основную логику п
 
 Поля класса:
 `private selectedItems: IProduct[] = []` - хранит массив товаров, выбранных покупателем для покупки.
+
+Конструктор класса принимает параметры:
+`protected events: EventEmitter` - брокер событий
+
+Инициируется события:
+`basket:changed` - реакция на изменение корзины.
 
 Методы класса:
 `getSelectedItems(): IProduct[] | null {return this.selectedItems}` - получение массива товаров, которые находятся в корзине.
@@ -153,6 +166,12 @@ Presenter - презентер содержит основную логику п
 `private address: string = "";` - хранит указанный адрес доставки.
 `private email: string = "";` - хранит емэйл покупателя.
 `private phone: string = "";` - хранит номер телефона покупателя.
+
+Конструктор класса принимает параметры:
+`protected events: EventEmitter` - брокер событий
+
+Инициируется события:
+`buyer:changed` - реакция на изменение данных покупателя.
 
 Методы класса:
 `setInfoBuyer(data: Partial<IBuyer>) {Object.assign(this as object, data)}` - сохранение данных в модели.
@@ -178,6 +197,8 @@ Presenter - презентер содержит основную логику п
 
 #### Класс Header
 
+В классе реализованна логика хранения и отображения элементов html разметки для ".header"
+
 Поля класса:
 `protected counterEl: HTMLElement` - хранит элемент html разметки с числом продуктов в корзине.
 `protected buttonEl: HTMLButtonElement` - хранит элемент html разметки с кнопкой, открывающей корзину
@@ -193,6 +214,8 @@ Presenter - презентер содержит основную логику п
 
 #### Класс Gallery
 
+В классе реализованна логика хранения и отображения элементов html разметки для ".gallery"
+
 Конструктор класса принимает параметры:
 `container: HTMLElement` - элемент html разметки с контейнером
 
@@ -200,6 +223,8 @@ Presenter - презентер содержит основную логику п
 `set catalog(items: HTMLElement[]) {this.container.replaceChildren(...items)}` - отображение каталога товаров;
 
 #### Класс Cart
+
+В классе реализованна логика хранения и отображения элементов html разметки для "#basket"
 
 Поля класса:
 `protected listBasketEl: HTMLElement` - хранит элемент html разметки со списком товаров.
@@ -214,10 +239,11 @@ Presenter - презентер содержит основную логику п
 
 Методы класса:
 `set items(list: HTMLElement[]) {this.basketButtonEl.disabled = list.length === 0; this.listBasketEl.replaceChildren(...list)}` - отображается список товаров, которые выбрал покупатель и если в корзине нет товаров, кнопка оформления должна быть деактивирована.
-
 `set total(value: number) {this.totalPriceEl.textContent = `${value} синапсов`}` - отображается общая стоимость товаров в корзине;
 
 #### Класс Modal
+
+В классе реализованна логика хранения и отображения элементов html разметки для ".modal"
 
 Поля класса:
 `protected contentEl: HTMLElement` - элемент html разметки с контейнером, где рендерится информация из дочерних классов: OrderForm и ContactForm.
@@ -232,6 +258,8 @@ Presenter - презентер содержит основную логику п
 `close() {this.container.classList.remove("modal_active")}` - закрытие модального окна.
 
 #### Класс Success
+
+В классе реализованна логика хранения и отображения элементов html разметки для "#success"
 
 Поля класса:
 `protected totalCostEl: HTMLElement` - хранит элемент html разметки, отображающий общую стоимость товаров в заказе.
@@ -248,6 +276,8 @@ Presenter - презентер содержит основную логику п
 
 #### Класс Form
 
+В классе реализованна логика хранения и отображения элементов html разметки для дочерних классов.
+
 Поля класса:
 `protected errorsEl: HTMLElement` - хранит элемент html разметки, отображающий ошибки при валидации.
 `protected buttonEl: HTMLButtonElement` - хранит элемент html разметки с кнопкой «Далее», может быть активной, если: на форме нет ошибок, выбран способ оплаты и поле адреса доставки непустое;
@@ -257,13 +287,13 @@ Presenter - презентер содержит основную логику п
 
 Методы класса:
 `set error(message: string) {this.errorsEl.textContent = message}` - если одно из полей не заполнено, появляется сообщение об ошибке;
-`clearErrors(): void {this.errorsEl.textContent = ""}` - очищение элемента разметки с сообщениями об ошибках.
-`toggleErrorClass(value: boolean): void {this.errorsEl.classList.toggle("form__errors-active", value)}` - отображение сообщений об ошибках.
 `setSubmitEnabled(enabled: boolean): void {this.buttonEl.disabled = !enabled}`- изменение активности кнопки «Далее».
 `resetForm(): void {this.clearErrors();this.buttonEl.setAttribute("disabled", "true")}` - приведение формы в изначальное состояние.
 `abstract checkValidation(message: TBuyerErrors): boolean;` - валидация данных формы.
 
 #### Класс OrderForm
+
+В классе реализованна логика хранения и отображения элементов html разметки "#order"
 
 Поля класса:
 `protected cashButtonEl: HTMLButtonElement` - элемент html разметки с выбором оплаты "При получении".
@@ -273,41 +303,41 @@ Presenter - презентер содержит основную логику п
 Конструктор класса принимает параметры:
 `container: HTMLElement` - элемент html разметки с контейнером
 `protected events: IEvents` - брокер событий
-`protected data: Partial<IBuyer> = {}` - объект с данными типа IBuyer.
 
 Инициируется события:
 `order:submit` - открывается модальное окно с рендером класса ContactForm
-`buyer:change` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
+`payment:changed` - сохраняются изменения в данных, вводимых пользователем при выборе оплаты.
+`address:changed` - сохраняются изменения в данных адресса.
 
 Методы класса:
 `clear(): void ` - очистка формы
-`onChange() {this.events.emit("buyer:change", this.data)}` - метод, который помогает реагировать на любые изменения в данных, вводимых пользователем.
-`setValidationErrors(value: TBuyerErrors)` - отображение ошибок при валидации формы и блокировка кнопки «Далее».
 `togglePaymentButton(payment: TPayment): void `- при выборе оплаты используется модификатор 'button_alt-active' для выделения кнопки с выбранным видом оплаты.
 `checkValidation(message: TBuyerErrors): boolean` - валидация формы.
 
 #### Класс ContactForm
 
+В классе реализованна логика хранения и отображения элементов html разметки "#contacts"
+
 Поля класса:
-`protected EmailInputEl: HTMLInputElement` - элемент html разметки с полем ввода "почта".
-`protected PhoneInputEl: HTMLInputElement` - элемент html разметки с полем ввода "телефон".
+`protected emailInputEl: HTMLInputElement` - элемент html разметки с полем ввода "почта".
+`protected phoneInputEl: HTMLInputElement` - элемент html разметки с полем ввода "телефон".
 
 Конструктор класса принимает параметры:
 `container: HTMLElement` - элемент html разметки с контейнером
 `protected events: IEvents` - брокер событий
-`protected data: Partial<IBuyer> = {}` - объект с данными типа IBuyer.
 
 Инициируется события:
+`email:changed` - сохраняются изменения в данных почты.
+`phone:changed` - сохраняются изменения в данных телефона.
 `order:succes` - открывается модальное окно с модальным окном успешного выполнения заказа.
-`buyer:change` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
 
 Методы класса:
 `clear(): void ` - очистка формы
-`onChange() {this.events.emit("buyer:change", this.data)}` - метод, который помогает реагировать на любые изменения в данных, вводимых пользователем.
-`setValidationErrors(value: TBuyerErrors)` - отображение ошибок при валидации формы и блокировка кнопки «Далее».
 `checkValidation(message: TBuyerErrors): boolean` - валидация формы.
 
 #### Класс Card
+
+В классе реализованна логика хранения и отображения элементов html разметки для дочерних классов.
 
 Поля класса:
 `protected titleEl: HTMLElement` - элемент html разметки с названием товара.
@@ -323,52 +353,53 @@ Presenter - презентер содержит основную логику п
 
 #### Класс CardBasket
 
+В классе реализованна логика хранения и отображения элементов html разметки "#card-basket"
+
 Поля класса:
 `protected indexEl: HTMLElement;` - элемент html разметки с индексом товара в корзине.
 `protected deletButtonEl: HTMLButtonElement;` - элемент html разметки с кнопкой, удаляющей товар из корзины.
-`private curentItem: IProduct | null = null;` - отображает карточку товара, которую выбрал пользователь.
 
 Конструктор класса принимает параметры:
 `container: HTMLElement` - элемент html разметки с контейнером
-`protected events: IEvents` - брокер событий
+`actions?: ICardActions` - объект с обрабочиком событий
 
 Инициируется события:
 `product:delete` - товар удаляется из корзины.
 
 Методы класса:
 `set index(value: number) {this.indexEl.textContent = String((value || 0) + 1);}` - отображение индекса товара в корзине.
-`render(product: ICardBasket): HTMLElement` - рендер корзины.
 
 #### Класс CardCatalog
+
+В классе реализованна логика хранения и отображения элементов html разметки "#card-catalog"
 
 Поля класса:
 `protected imageEl: HTMLImageElement` - элемент html разметки с изображением товара в каталоге.
 `protected categoryEl: HTMLElement` - элемент html разметки с категорией товара в каталоге.
-`private curentItem: IProduct | null = null;` - отображает карточку товара, которую выбрал пользователь.
 
 Конструктор класса принимает параметры:
 `container: HTMLElement` - элемент html разметки с контейнером
-`protected events: IEvents` - брокер событий
+`actions?: ICardActions` - объект с обрабочиком событий
 
 Инициируется события:
-`product:select` - отображается подробная информация о товаре.
+`product:selected` - отображается подробная информация о товаре.
 
 Методы класса:
 `set image(value: string) ` - рендер картинки
 `set category(value: string) ` - рендер категории
-`render(product: IProduct): HTMLElement` - рендер карточки товара в каталоге.
 
 #### Класс CardPreview
 
+В классе реализованна логика хранения и отображения элементов html разметки "#card-preview"
+
 `protected imageEl: HTMLImageElement` - элемент html разметки с изображением товара в каталоге.
 `protected categoryEl: HTMLElement` - элемент html разметки с категорией товара в каталоге.
-`private curentItem: IProduct | null = null;` - отображает карточку товара, которую выбрал пользователь.
 `protected descriptionEl: HTMLElement` - элемент html разметки с описанием товара в каталоге.
 `protected buttonEl: HTMLButtonElement`- элемент html разметки с описанием кнопкой, добавляющей товар в корзину.
 
 Конструктор класса принимает параметры:
 `container: HTMLElement` - элемент html разметки с контейнером
-`protected events: IEvents` - брокер событий
+`actions?: ICardActions` - объект с обрабочиком событий
 
 Инициируется события:
 `cart:add_product` - отображает добавление товара в корзину.
@@ -377,6 +408,7 @@ Presenter - презентер содержит основную логику п
 `set image(value: string) ` - рендер картинки.
 `set category(value: string) ` - рендер категории.
 `set description(value: string)` - рендер описания.
+`set button(value: string) ` - рендер текста в кнопке
 `renderButtonText(value: boolean): void ` - рендер текста в кнопке, в зависимости от ее состояния.
 `render(product: IProduct): HTMLElement` - рендер карточки товара в каталоге.
 
@@ -384,29 +416,51 @@ Presenter - презентер содержит основную логику п
 
 #### Класс Presenter
 
-Поля класса:
-Экземпляры всех классов слоя Представления, слоя Модели данных, брокер событий и слой коммуникации.
+В проекте WebLarek реализован паттерн MVP (Model-View-Presenter), где презентер вынесен в отдельный класс 'Presenter'. Такой подход выбран по следующим причинам:
 
-Инициируется события:
+- Четкое разделение ответственности, каждый слой отвечает за свою задачу.
+- Нет жесткой связанности между классами. Используется инверсия зависимостей.
+- Централизованная логика - вся бизнес-логика сосредоточена в одном месте.
+- Упрощенная отладка - все обработчики событий находятся в одном файле.
+
+Назначение:
+
+- Инициализация приложения и загрузка данных с сервера.
+- Обработка действий пользователя.
+- Синхронизация состояния моделей и представлений.
+- Валидация форм и управление доступностью кнопок отправки.
+- Управление модальными окнами.
+
+Поля класса:
+Интерфейсы всех классов слоя Представления, слоя Модели данных, слоя Коммуникации и брокер событий.
+
+Обрабатываются события:
 `cart:add_product` - отображает добавление товара в корзину.
 `products:loaded` - отображается галерея с товарами.
 `basket:open` - открывается корзина с товарами.
-`product:select` - отображается подробная информация о товаре.
-`product:delete` - товар удаляется из корзины.
-`order:open` - открывается модальное окно с рендером класса OrderForm.
+`product:selected` - отображается подробная информация о товаре.
+`product:deleted` - товар удаляется из корзины.
+`basket:changed` - реакция на изменение корзины.
+`selected:changed` - реакция на изменение карточки товара.
+`order:opened` - открывается модальное окно с рендером класса OrderForm.
+`payment:changed` - сохраняем изменения оплаты.
+`address:changed` - сохраняем изменения адресса.
+`email:changed` - сохраняем изменения почты.
+`phone:changed` - сохраняем изменения телефона.
 `order:succes` - открывается модальное окно с модальным окном успешного выполнения заказа.
 `order:submit` - открывается модальное окно с рендером класса ContactForm
 `succes:close` - закрывается модальное окно с успешным выполнением заказа.
-`buyer:change` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
+`buyer:changed` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
 
 Методы класса:
 `cartAddProduct(item: IProduct): void` - добавление товара в корзину.
+`getProduct() ` - получаем данные с сервера и сохраняем их.
 `renderGallery()` - рендер галереи с товарами.
 `renderBasket()` - рендер корзины с товарами.
 `succesOpen()` - открывается модальное окно с модальным окном успешного выполнения заказа.
 `succesClose()` - закрывается модальное окно с успешным выполнением заказа.
 `productDeleteFromCart(item: IProduct): void` - товар удаляется из корзины.
-`openPreview(item: IProduct): void` - отображается подробная информация о товаре.
+`renderPreview(item: IProduct): void` - отображается подробная информация о товаре.
 `changeInfoBuyer(data: Partial<IBuyer>)` - сохраняются изменения в данных, вводимых пользователем, в объект с данными типа IBuyer.
 `renderOrderForm()` - открывается модальное окно с рендером класса OrderForm.
 `renderContactForm()` - открывается модальное окно с рендером класса ContactForm.
