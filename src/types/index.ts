@@ -13,7 +13,7 @@ export interface IApiGet {
 
 export interface IApiPost extends IBuyer {
   total: number;
-  items: IProduct[];
+  items: string[];
 }
 
 export interface IApi {

@@ -19,7 +19,7 @@ export class OrderForm extends Form {
       this.container,
     );
     this.cashButtonEl.addEventListener("click", () => {
-      events.emit("payment:change", { payment: "cash" });
+      events.emit("payment:changed", { payment: "cash" });
     });
 
     this.cardButtonEl = ensureElement<HTMLButtonElement>(
@@ -27,7 +27,7 @@ export class OrderForm extends Form {
       this.container,
     );
     this.cardButtonEl.addEventListener("click", () => {
-      events.emit("payment:change", { payment: "online" });
+      events.emit("payment:changed", { payment: "online" });
     });
 
     this.inputEl = ensureElement<HTMLInputElement>(
@@ -35,7 +35,7 @@ export class OrderForm extends Form {
       this.container,
     );
     this.inputEl.addEventListener("input", () => {
-      events.emit("address:change", { address: this.inputEl.value });
+      events.emit("address:changed", { address: this.inputEl.value });
     });
 
     this.buttonEl.addEventListener("click", (e) => {

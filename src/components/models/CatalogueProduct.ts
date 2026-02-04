@@ -15,6 +15,7 @@ export class CatalogueProduct {
   //сохранение массива товаров полученного в параметрах метода;
   setItems(items: IProduct[]): void {
     this.items = items;
+    this.events.emit("products:loaded");
   }
 
   //получение одного товара по его id;

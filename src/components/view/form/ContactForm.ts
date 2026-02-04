@@ -17,7 +17,7 @@ export class ContactForm extends Form {
       this.container,
     );
     this.emailInputEl.addEventListener("input", () => {
-      events.emit("email:change", { email: this.emailInputEl.value });
+      events.emit("email:changed", { email: this.emailInputEl.value });
     });
 
     this.phoneInputEl = ensureElement<HTMLInputElement>(
@@ -25,7 +25,7 @@ export class ContactForm extends Form {
       this.container,
     );
     this.phoneInputEl.addEventListener("input", () => {
-      events.emit("phone:change", { phone: this.phoneInputEl.value });
+      events.emit("phone:changed", { phone: this.phoneInputEl.value });
     });
 
     this.buttonEl.addEventListener("click", (e) => {

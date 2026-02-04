@@ -30,7 +30,7 @@ export class Cart extends Component<IBasket> {
       this.container,
     );
     this.basketButtonEl.addEventListener("click", () => {
-      this.events.emit("order:open");
+      this.events.emit("order:opened");
     });
   }
 
