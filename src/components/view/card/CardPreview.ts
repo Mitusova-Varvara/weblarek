@@ -1,9 +1,8 @@
 import { Card } from "./Card";
-import { IProduct } from "../../../types";
+import { ICardActions, IProduct } from "../../../types";
 import { ensureElement } from "../../../utils/utils";
 import { CDN_URL } from "../../../utils/constants";
 import { categoryMap } from "../../../utils/constants";
-import { IEvents } from "../../base/Events";
 
 type TCardPreview = Pick<IProduct, "image" | "category" | "description">;
 
@@ -12,13 +11,9 @@ export class CardPreview extends Card<TCardPreview> {
   protected categoryEl: HTMLElement;
   protected descriptionEl: HTMLElement;
   protected buttonEl: HTMLButtonElement;
-  private curentItem: IProduct | null = null;
 
-  constructor(
-    container: HTMLElement,
-    protected events: IEvents,
-  ) {
-    super(container, events);
+  constructor(container: HTMLElement, actions?: ICardActions) {
+    super(container);
     this.imageEl = ensureElement<HTMLImageElement>(
       ".card__image",
       this.container,
@@ -35,11 +30,10 @@ export class CardPreview extends Card<TCardPreview> {
       ".card__button",
       this.container,
     );
-    this.buttonEl.addEventListener("click", () => {
-      if (this.curentItem) {
-        events.emit("cart:add_product", this.curentItem);
-      }
-    });
+
+    if (actions?.onClick) {
+      this.buttonEl.addEventListener("click", actions.onClick);
+    }
   }
   set image(value: string) {
     let result: string = value.replace(".svg", ".png");
@@ -60,7 +54,6 @@ export class CardPreview extends Card<TCardPreview> {
   }
 
   render(product: IProduct): HTMLElement {
-    this.curentItem = product;
     if (product.price === null) {
       this.buttonEl.setAttribute("disabled", "true");
       this.buttonEl.textContent = "Недоступно";

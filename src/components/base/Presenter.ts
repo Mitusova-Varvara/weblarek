@@ -63,9 +63,9 @@ export class Presenter {
     this.cart = cart;
     this.api = api;
 
-    events.on("cart:add_product", (item: IProduct) =>
-      this.cartAddProduct(item),
-    );
+    events.on("cart:add_product", (product: IProduct) => {
+      this.cartAddProduct(product);
+    });
 
     events.on("products:loaded", () => {
       this.renderGallery();
@@ -79,19 +79,16 @@ export class Presenter {
       this.succesClose();
     });
 
-    events.on("product:delete", (data: { item: string }) => {
-      let currentItem = this.catalog.getItemId(data.item);
-      this.basket.removeItem(currentItem!);
-      console.log(currentItem);
+    events.on("product:delete", (product: IProduct) => {
+      this.basket.removeItem(product);
     });
 
     events.on("basket:changed", () => {
       this.header.count = this.basket.getCount();
-      this.renderBasket();
     });
 
-    events.on("product:select", (item: IProduct) => {
-      this.openPreview(item);
+    events.on("product:select", (product: IProduct) => {
+      this.openPreview(product);
     });
 
     events.on("order:open", () => {
@@ -139,23 +136,24 @@ export class Presenter {
   }
 
   renderGallery() {
-    const cards = this.catalog
-      .getItems()
-      .map((prod) =>
-        new CardCatalog(cloneTemplate("#card-catalog"), this.events).render(
-          prod,
-        ),
-      );
+    const cards = this.catalog.getItems().map((prod) =>
+      new CardCatalog(cloneTemplate("#card-catalog"), {
+        onClick: () => {
+          this.events.emit("product:select", prod);
+        },
+      }).render(prod),
+    );
     this.gallery.render({ catalog: cards });
   }
 
   renderBasket() {
     let basketProducts = (this.basket.getSelectedItems() || []).map(
       (item, index) =>
-        new CardBasket(
-          cloneTemplate<HTMLElement>("#card-basket"),
-          this.events,
-        ).render({
+        new CardBasket(cloneTemplate<HTMLElement>("#card-basket"), {
+          onClick: () => {
+            this.events.emit("product:delete", item);
+          },
+        }).render({
           ...item,
           index: index,
         }),

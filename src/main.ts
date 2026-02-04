@@ -26,13 +26,14 @@ const gallery = new Gallery(ensureElement<HTMLElement>(".gallery"));
 const header = new Header(ensureElement<HTMLElement>(".header"), events);
 const modal = new Modal(ensureElement<HTMLElement>(".modal"));
 const success = new Success(cloneTemplate<HTMLElement>("#success"), events);
-const cardBasket = new CardBasket(
-  cloneTemplate<HTMLElement>("#card-basket"),
-  events,
-);
+const cardBasket = new CardBasket(cloneTemplate<HTMLElement>("#card-basket"));
 const cardPreview = new CardPreview(
   cloneTemplate<HTMLElement>("#card-preview"),
-  events,
+  {
+    onClick: () => {
+      events.emit("cart:add_product");
+    },
+  },
 );
 const contactForm = new ContactForm(
   cloneTemplate<HTMLElement>("#contacts"),

@@ -1,15 +1,11 @@
 import { ensureElement } from "../../../utils/utils";
 import { Component } from "../../base/Component";
-import { IEvents } from "../../base/Events";
 
 export abstract class Card<T> extends Component<T> {
   protected titleEl: HTMLElement;
   protected priceEl: HTMLElement;
 
-  constructor(
-    container: HTMLElement,
-    protected evt: IEvents,
-  ) {
+  constructor(container: HTMLElement) {
     super(container);
     this.titleEl = ensureElement<HTMLElement>(".card__title", this.container);
     this.priceEl = ensureElement<HTMLElement>(".card__price", this.container);

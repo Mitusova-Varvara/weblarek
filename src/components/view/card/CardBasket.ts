@@ -1,7 +1,6 @@
-import { IProduct } from "../../../types";
+import { ICardActions, IProduct } from "../../../types";
 import { ensureElement } from "../../../utils/utils";
 import { Card } from "./Card";
-import { IEvents } from "../../base/Events";
 
 type ICardBasket = {
   component: Pick<IProduct, "id">;
@@ -12,11 +11,8 @@ export class CardBasket extends Card<ICardBasket> {
   protected indexEl: HTMLElement;
   protected deletButtonEl: HTMLButtonElement;
 
-  constructor(
-    container: HTMLElement,
-    protected events: IEvents,
-  ) {
-    super(container, events);
+  constructor(container: HTMLElement, actions?: ICardActions) {
+    super(container);
     this.indexEl = ensureElement<HTMLElement>(
       ".basket__item-index",
       this.container,
@@ -25,11 +21,9 @@ export class CardBasket extends Card<ICardBasket> {
       ".basket__item-delete",
       this.container,
     );
-    this.deletButtonEl.addEventListener("click", () => {
-      let id = this.container.dataset.id;
-      console.log(id);
-      this.events.emit("product:delete", { item: id });
-    });
+    if (actions?.onClick) {
+      this.container.addEventListener("click", actions.onClick);
+    }
   }
 
   set index(value: number) {

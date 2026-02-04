@@ -2,6 +2,10 @@ export type ApiPostMethods = "POST" | "PUT" | "DELETE";
 export type TPayment = "online" | "cash" | null;
 export type TBuyerErrors = Partial<Record<keyof IBuyer, string>>;
 
+export interface ICardActions {
+  onClick?: (event: MouseEvent) => void;
+}
+
 export interface IApiGet {
   total: number;
   items: IProduct[];
