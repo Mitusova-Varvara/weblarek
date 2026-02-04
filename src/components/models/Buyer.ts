@@ -1,5 +1,6 @@
 import { IBuyer, TPayment } from "../../types";
 import { TBuyerErrors } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class Buyer {
   private payment: TPayment = null;
@@ -7,9 +8,31 @@ export class Buyer {
   private email: string = "";
   private phone: string = "";
 
+  constructor(private events: EventEmitter) {}
+
   //сохранение данных в модели.
   setInfoBuyer(data: Partial<IBuyer>) {
     Object.assign(this as object, data);
+  }
+
+  setPayment(payment: TPayment): void {
+    this.payment = payment;
+    this.events.emit("buyer:changed", { field: "payment" });
+  }
+
+  setAddress(address: string): void {
+    this.address = address;
+    this.events.emit("buyer:changed", { field: "address" });
+  }
+
+  setEmail(email: string): void {
+    this.email = email;
+    this.events.emit("buyer:changed", { field: "email" });
+  }
+
+  setPhone(phone: string): void {
+    this.phone = phone;
+    this.events.emit("buyer:changed", { field: "phone" });
   }
 
   //получение всех данных покупателя;

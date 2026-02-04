@@ -19,7 +19,7 @@ import { Success } from "./components/view/Success";
 import { Presenter } from "./components/base/Presenter";
 
 const events = new EventEmitter();
-const buyer = new Buyer();
+const buyer = new Buyer(events);
 const basket = new Basket();
 const product = new CatalogueProduct();
 const gallery = new Gallery(ensureElement<HTMLElement>(".gallery"));

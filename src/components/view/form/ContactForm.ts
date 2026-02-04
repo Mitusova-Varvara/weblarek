@@ -1,44 +1,37 @@
 import { ensureElement } from "../../../utils/utils";
 import { Form } from "./Form";
 import { IEvents } from "../../base/Events";
-import { IBuyer, TBuyerErrors } from "../../../types";
+import { TBuyerErrors } from "../../../types";
 
 export class ContactForm extends Form {
-  protected EmailInputEl: HTMLInputElement;
-  protected PhoneInputEl: HTMLInputElement;
+  protected emailInputEl: HTMLInputElement;
+  protected phoneInputEl: HTMLInputElement;
 
   constructor(
     container: HTMLElement,
     protected events: IEvents,
-    protected data: Partial<IBuyer> = {},
   ) {
     super(container);
-    this.EmailInputEl = ensureElement<HTMLInputElement>(
+    this.emailInputEl = ensureElement<HTMLInputElement>(
       "input[name='email']",
       this.container,
     );
-    this.EmailInputEl.addEventListener("input", () => {
-      this.data.email = this.EmailInputEl.value;
-      this.onChange();
+    this.emailInputEl.addEventListener("input", () => {
+      events.emit("email:change", { email: this.emailInputEl.value });
     });
 
-    this.PhoneInputEl = ensureElement<HTMLInputElement>(
+    this.phoneInputEl = ensureElement<HTMLInputElement>(
       "input[name='phone']",
       this.container,
     );
-    this.PhoneInputEl.addEventListener("input", () => {
-      this.data.phone = this.PhoneInputEl.value;
-      this.onChange();
+    this.phoneInputEl.addEventListener("input", () => {
+      events.emit("phone:change", { phone: this.phoneInputEl.value });
     });
 
     this.buttonEl.addEventListener("click", (e) => {
       e.preventDefault();
       this.events.emit("order:succes");
     });
-  }
-
-  onChange() {
-    this.events.emit("buyer:change", this.data);
   }
 
   setValidationErrors(value: TBuyerErrors) {
@@ -49,13 +42,11 @@ export class ContactForm extends Form {
   }
 
   clear(): void {
-    this.data = {};
-    this.EmailInputEl.value = "";
-    this.PhoneInputEl.value = "";
+    this.emailInputEl.value = "";
+    this.phoneInputEl.value = "";
   }
 
   checkValidation(message: TBuyerErrors): boolean {
-    this.clearErrors();
     this.error = message.email || message.phone || "";
     return !message.email && !message.phone;
   }

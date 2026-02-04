@@ -1,7 +1,7 @@
 import { ensureElement } from "../../../utils/utils";
 import { Form } from "./Form";
 import { IEvents } from "../../base/Events";
-import { IBuyer, TBuyerErrors } from "../../../types";
+import { TBuyerErrors } from "../../../types";
 import { TPayment } from "../../../types";
 
 export class OrderForm extends Form {
@@ -12,7 +12,6 @@ export class OrderForm extends Form {
   constructor(
     container: HTMLElement,
     protected events: IEvents,
-    protected data: Partial<IBuyer> = {},
   ) {
     super(container);
     this.cashButtonEl = ensureElement<HTMLButtonElement>(
@@ -20,8 +19,7 @@ export class OrderForm extends Form {
       this.container,
     );
     this.cashButtonEl.addEventListener("click", () => {
-      this.data.payment = "cash";
-      this.onChange();
+      events.emit("payment:change", { payment: "cash" });
     });
 
     this.cardButtonEl = ensureElement<HTMLButtonElement>(
@@ -29,8 +27,7 @@ export class OrderForm extends Form {
       this.container,
     );
     this.cardButtonEl.addEventListener("click", () => {
-      this.data.payment = "online";
-      this.onChange();
+      events.emit("payment:change", { payment: "online" });
     });
 
     this.inputEl = ensureElement<HTMLInputElement>(
@@ -38,8 +35,7 @@ export class OrderForm extends Form {
       this.container,
     );
     this.inputEl.addEventListener("input", () => {
-      this.data.address = this.inputEl.value;
-      this.onChange();
+      events.emit("address:change", { address: this.inputEl.value });
     });
 
     this.buttonEl.addEventListener("click", (e) => {
@@ -49,15 +45,9 @@ export class OrderForm extends Form {
   }
 
   clear(): void {
-    this.data = {};
     this.cardButtonEl.classList.remove("button_alt-active");
     this.cashButtonEl.classList.remove("button_alt-active");
     this.inputEl.value = "";
-    this.onChange();
-  }
-
-  onChange() {
-    this.events.emit("buyer:change", this.data);
   }
 
   setValidationErrors(value: TBuyerErrors) {
@@ -80,7 +70,6 @@ export class OrderForm extends Form {
   }
 
   checkValidation(message: TBuyerErrors): boolean {
-    this.clearErrors();
     this.error = message.payment || message.address || "";
     return !message.payment && !message.address;
   }
